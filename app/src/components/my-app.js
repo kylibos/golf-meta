@@ -16,6 +16,8 @@ import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
+import './gm-blocker.js';
+
 // This element is connected to the Redux store.
 import { store } from '../store.js';
 
@@ -233,6 +235,8 @@ class MyApp extends connect(store)(LitElement) {
       <footer>
         <p>Made with &hearts; by the Polymer team.</p>
       </footer>
+
+      <gm-blocker></gm-blocker>
 
       <snack-bar ?active="${this._snackbarOpened}">
         You are now ${this._offline ? 'offline' : 'online'}.
