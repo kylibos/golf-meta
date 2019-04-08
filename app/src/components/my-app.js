@@ -28,6 +28,12 @@ import {
   updateDrawerState
 } from '../actions/app.js';
 
+import {
+  signInUser,
+  signOutUser
+} from '../actions/user.js';
+
+import { auth } from '../firebase.js';
 import { firestore } from '../firebase.js';
 
 // These are the elements needed by this element.
@@ -45,7 +51,8 @@ class MyApp extends connect(store)(LitElement) {
       _page: { type: String },
       _drawerOpened: { type: Boolean },
       _snackbarOpened: { type: Boolean },
-      _offline: { type: Boolean }
+      _offline: { type: Boolean },
+      _signedIn: {type: Boolean}
     };
   }
 
@@ -170,6 +177,14 @@ class MyApp extends connect(store)(LitElement) {
           text-align: center;
         }
 
+        .hide {
+          display:none !important;
+        }
+
+        .show {
+          display:block !important;
+        }
+
         /* Wide layout: when the viewport width is bigger than 460px, layout
         changes to a wide layout */
         @media (min-width: 460px) {
@@ -203,6 +218,7 @@ class MyApp extends connect(store)(LitElement) {
         <app-toolbar class="toolbar-top">
           <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
           <div main-title>${this.appTitle}</div>
+          <div @click="${this._signOut}" style="cursor:pointer;">Sign Out</div>
         </app-toolbar>
 
         <!-- This gets hidden on a small screen-->
@@ -236,7 +252,7 @@ class MyApp extends connect(store)(LitElement) {
         <p>Made with &hearts; by the Polymer team.</p>
       </footer>
 
-      <gm-blocker></gm-blocker>
+      <gm-blocker class="${this._signedIn ? 'hide' : 'show'}"></gm-blocker>
 
       <snack-bar ?active="${this._snackbarOpened}">
         You are now ${this._offline ? 'offline' : 'online'}.
@@ -249,6 +265,15 @@ class MyApp extends connect(store)(LitElement) {
     // To force all event listeners for gestures to be passive.
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
+
+    auth.onAuthStateChanged((user) => {
+      if (user){
+        store.dispatch(signInUser(user));
+      } else {
+        store.dispatch(signOutUser());
+      }
+      console.log('auth state changed', user);
+    });
   }
 
   firstUpdated() {
@@ -282,6 +307,11 @@ class MyApp extends connect(store)(LitElement) {
     this._offline = state.app.offline;
     this._snackbarOpened = state.app.snackbarOpened;
     this._drawerOpened = state.app.drawerOpened;
+    this._signedIn = state.user.signedIn;
+  }
+
+  _signOut(){
+    auth.signOut();
   }
 }
 
