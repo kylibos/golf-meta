@@ -50,7 +50,7 @@ class MyView1 extends PageViewElement {
 
     
       <section>
-        <h2>Static page</h2>
+        <h2>Static page Test</h2>
         <p>This is a text-only page.</p>
         <p>It doesn't do anything other than display some static text.</p>
       </section>
