@@ -15,8 +15,10 @@ import { PageViewElement } from './page-view-element.js';
 import { SharedStyles } from './shared-styles.js';
 
 import '@polymer/paper-fab/paper-fab.js';
+import '@polymer/paper-dialog/paper-dialog.js';
 import '@polymer/iron-iconset-svg/iron-iconset-svg.js';
 import '@polymer/iron-icon/iron-icon.js';
+import './gm-uploader.js';
 
 class MyView1 extends PageViewElement {
   static get styles() {
@@ -48,7 +50,7 @@ class MyView1 extends PageViewElement {
         </svg>
       </iron-iconset-svg>
 
-    
+
       <section>
         <h2>Static page</h2>
         <p>This is a text-only page.</p>
@@ -62,8 +64,25 @@ class MyView1 extends PageViewElement {
         <p>Vestibulum at est ex. Aenean id ligula id nibh dictum laoreet. Etiam non semper erat. Pellentesque eu justo rhoncus diam vulputate facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam feugiat metus ex, vel fringilla massa tincidunt sit amet. Nunc facilisis bibendum tristique. Mauris commodo, dolor vitae dapibus fermentum, odio nibh viverra lorem, eu cursus diam turpis et sapien. Nunc suscipit tortor a ligula tincidunt, id hendrerit tellus sollicitudin.</p>
       </section>
 
-      <paper-fab id="addVideoButton" icon="inline:plus" @click="${this.addVideoButtonClicked}"></paper-fab>
+      <paper-fab id="addVideoButton" icon="inline:plus" @click="${this._addVideoButtonClicked}"></paper-fab>
+
+      <paper-dialog id="uploadDialog" modal>
+        <gm-uploader></gm-uploader>
+      </paper-dialog>
     `;
+  }
+
+  firstUpdated() {
+    console.log('create listener');
+    this.addEventListener('closeUploadDialog', (e) => this._closeDialog());
+  }
+
+  _closeDialog(){
+    this.shadowRoot.getElementById('uploadDialog').close();
+  }
+
+  _addVideoButtonClicked(){
+    this.shadowRoot.getElementById('uploadDialog').open();
   }
 }
 
