@@ -17,6 +17,7 @@ import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 import './gm-blocker.js';
+import { SharedStyles } from './shared-styles.js';
 
 // This element is connected to the Redux store.
 import { store } from '../store.js';
@@ -62,8 +63,11 @@ class MyApp extends connect(store)(LitElement) {
         :host {
           display: block;
 
-          --app-drawer-width: 256px;
+          --app-light-color: #e7ff8c;
+          --app-color: #b2ff59;
+          --app-dark-color: #7ecb20;
 
+          --app-drawer-width: 256px;
           --app-primary-color: #E91E63;
           --app-secondary-color: #293237;
           --app-dark-text-color: var(--app-secondary-color);
@@ -72,12 +76,12 @@ class MyApp extends connect(store)(LitElement) {
           --app-section-odd-color: white;
 
           --app-header-background-color: white;
-          --app-header-text-color: var(--app-dark-text-color);
-          --app-header-selected-color: var(--app-primary-color);
+          --app-header-text-color:  white;
+          --app-header-selected-color: var(--app-light-color);
 
           --app-drawer-background-color: var(--app-secondary-color);
           --app-drawer-text-color: var(--app-light-text-color);
-          --app-drawer-selected-color: #78909C;
+          --app-drawer-selected-color: var(--app-color);
         }
 
         app-header {
@@ -86,18 +90,17 @@ class MyApp extends connect(store)(LitElement) {
           left: 0;
           width: 100%;
           text-align: center;
-          background-color: var(--app-header-background-color);
-          color: var(--app-header-text-color);
+          background-color: var(--app-dark-color);
+          color: white;
           border-bottom: 1px solid #eee;
         }
 
         .toolbar-top {
-          background-color: var(--app-header-background-color);
+          background-color: var(--app-dark-color);
         }
 
         [main-title] {
           font-family: 'Pacifico';
-          text-transform: lowercase;
           font-size: 30px;
           /* In the narrow layout, the toolbar is offset by the width of the
           drawer button, and the text looks not centered. Add a padding to
@@ -105,22 +108,6 @@ class MyApp extends connect(store)(LitElement) {
           padding-right: 44px;
         }
 
-        .toolbar-list {
-          display: none;
-        }
-
-        .toolbar-list > a {
-          display: inline-block;
-          color: var(--app-header-text-color);
-          text-decoration: none;
-          line-height: 30px;
-          padding: 4px 24px;
-        }
-
-        .toolbar-list > a[selected] {
-          color: var(--app-header-selected-color);
-          border-bottom: 4px solid var(--app-header-selected-color);
-        }
 
         .menu-btn {
           background: none;
@@ -188,10 +175,6 @@ class MyApp extends connect(store)(LitElement) {
         /* Wide layout: when the viewport width is bigger than 460px, layout
         changes to a wide layout */
         @media (min-width: 460px) {
-          .toolbar-list {
-            display: block;
-          }
-
           .menu-btn {
             display: none;
           }
@@ -217,16 +200,11 @@ class MyApp extends connect(store)(LitElement) {
       <app-header condenses reveals effects="waterfall">
         <app-toolbar class="toolbar-top">
           <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
-          <div main-title>${this.appTitle}</div>
+          <div main-title>Golf Meta</div>
           <div @click="${this._signOut}" style="cursor:pointer;">Sign Out</div>
         </app-toolbar>
 
-        <!-- This gets hidden on a small screen-->
-        <nav class="toolbar-list">
-          <a ?selected="${this._page === 'view1'}" href="/view1">View One</a>
-          <a ?selected="${this._page === 'view2'}" href="/view2">View Two</a>
-          <a ?selected="${this._page === 'view3'}" href="/view3">View Three</a>
-        </nav>
+
       </app-header>
 
       <!-- Drawer content -->
