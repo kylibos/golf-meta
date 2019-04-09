@@ -53,7 +53,8 @@ class MyApp extends connect(store)(LitElement) {
       _drawerOpened: { type: Boolean },
       _snackbarOpened: { type: Boolean },
       _offline: { type: Boolean },
-      _signedIn: {type: Boolean}
+      _signedIn: {type: Boolean},
+      _photoURL: {type: String}
     };
   }
 
@@ -175,9 +176,7 @@ class MyApp extends connect(store)(LitElement) {
         /* Wide layout: when the viewport width is bigger than 460px, layout
         changes to a wide layout */
         @media (min-width: 460px) {
-          .menu-btn {
-            display: none;
-          }
+
 
           .main-content {
             padding-top: 107px;
@@ -201,7 +200,9 @@ class MyApp extends connect(store)(LitElement) {
         <app-toolbar class="toolbar-top">
           <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
           <div main-title>Golf Meta</div>
-          <div @click="${this._signOut}" style="cursor:pointer;">Sign Out</div>
+          <div @click="${this._signOut}" style="display:flex; align-items: center; cursor:pointer;">
+            <img style="border-radius:50%; height:40px;" src="${this._photoURL}" />
+          </div>
         </app-toolbar>
 
 
@@ -250,7 +251,7 @@ class MyApp extends connect(store)(LitElement) {
       } else {
         store.dispatch(signOutUser());
       }
-      console.log('auth state changed', user);
+      //console.log('auth state changed', user);
     });
   }
 
@@ -286,6 +287,8 @@ class MyApp extends connect(store)(LitElement) {
     this._snackbarOpened = state.app.snackbarOpened;
     this._drawerOpened = state.app.drawerOpened;
     this._signedIn = state.user.signedIn;
+    this._photoURL = state.user.photoURL;
+    console.log('THIS USER', state.user);
   }
 
   _signOut(){
