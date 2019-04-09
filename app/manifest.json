@@ -1,11 +1,11 @@
 {
-  "name": "My App",
-  "short_name": "My App",
-  "description": "My App description",
+  "name": "Golf Meta",
+  "short_name": "Golf Meta",
+  "description": "Share Your Swing",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#3f51b5",
-  "background_color": "#3f51b5",
+  "theme_color": "#7ecb20",
+  "background_color": "#7ecb20",
   "icons": [
     {
       "src": "images/manifest/icon-192x192.png",
