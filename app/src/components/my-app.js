@@ -106,7 +106,7 @@ class MyApp extends connect(store)(LitElement) {
           /* In the narrow layout, the toolbar is offset by the width of the
           drawer button, and the text looks not centered. Add a padding to
           match that button */
-          padding-right: 44px;
+          text-shadow: 2px 2px #795548;
         }
 
 
@@ -213,7 +213,7 @@ class MyApp extends connect(store)(LitElement) {
           .opened="${this._drawerOpened}"
           @opened-changed="${this._drawerOpenedChanged}">
         <nav class="drawer-list">
-          <a ?selected="${this._page === 'view1'}" href="/view1">View One</a>
+          <a ?selected="${this._page === 'view1'}" href="/view1">Videos</a>
           <a ?selected="${this._page === 'view2'}" href="/view2">View Two</a>
           <a ?selected="${this._page === 'view3'}" href="/view3">View Three</a>
         </nav>

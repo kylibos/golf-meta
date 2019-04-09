@@ -20,6 +20,10 @@
   },
   "dependencies": {
     "@polymer/app-layout": "^3.0.0",
+    "@polymer/iron-icon": "github:PolymerElements/iron-icon",
+    "@polymer/iron-iconset-svg": "^3.0.1",
+    "@polymer/paper-dialog": "github:PolymerElements/paper-dialog",
+    "@polymer/paper-fab": "github:PolymerElements/paper-fab",
     "@polymer/polymer": "^3.1.0",
     "@webcomponents/webcomponentsjs": "^2.2.4",
     "firebase": "^5.9.3",
