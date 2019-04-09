@@ -34,8 +34,7 @@ import {
   signOutUser
 } from '../actions/user.js';
 
-import { auth } from '../firebase.js';
-import { firestore } from '../firebase.js';
+import { firebase } from '../firebase.js';
 
 // These are the elements needed by this element.
 import '@polymer/app-layout/app-drawer/app-drawer.js';
@@ -245,7 +244,7 @@ class MyApp extends connect(store)(LitElement) {
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
 
-    auth.onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged((user) => {
       if (user){
         store.dispatch(signInUser(user));
       } else {
@@ -292,7 +291,7 @@ class MyApp extends connect(store)(LitElement) {
   }
 
   _signOut(){
-    auth.signOut();
+    firebase.auth().signOut();
   }
 }
 

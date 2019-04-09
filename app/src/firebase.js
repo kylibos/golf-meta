@@ -1,3 +1,4 @@
+/*
 if (window.location.hostname == '127.0.0.1'){
 	// Dev
 	var config = {
@@ -25,3 +26,18 @@ export {
   firestore,
   auth
 };
+*/
+
+  export const firebase = window.firebase;
+
+  // Initialize Firebase
+  // TODO: Replace with your project's customized code snippet
+  var config = {
+		apiKey: "AIzaSyBwLD9Zz3OgXt-3D7jex8cfd0F3prp_G54",
+		authDomain: "golf-meta-dev.firebaseapp.com",
+		databaseURL: "https://golf-meta-dev.firebaseio.com",
+		projectId: "golf-meta-dev",
+		storageBucket: "golf-meta-dev.appspot.com",
+		messagingSenderId: "823322072217"
+  };
+  firebase.initializeApp(config);

@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit-element';
-import { auth } from '../firebase.js';
+import { firebase } from '../firebase.js';
+
 import { SharedStyles } from './shared-styles.js';
 
 // This element is *not* connected to the Redux store.
@@ -67,13 +68,13 @@ class GmBlocker extends LitElement {
 
   signInGoogle(){
     var provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).then(function(result) {
+    firebase.auth().signInWithPopup(provider).then(function(result) {
       // This gives you a Google Access Token. You can use it to access the Google API.
       var token = result.credential.accessToken;
       // The signed-in user info.
       var user = result.user;
 
-      store.dispatch(signInUser(result.user));
+      //store.dispatch(signInUser(result.user));
       // ...
     }).catch(function(error) {
       console.log(error);
