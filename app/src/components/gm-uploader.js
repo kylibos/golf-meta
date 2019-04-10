@@ -31,15 +31,22 @@ class GmUploader extends LitElement {
           --paper-input-container-focus-color:var(--app-dark-color);
         }
 
+        .fileInput {
+          width: 0.1px;
+          height: 0.1px;
+          opacity: 0;
+          overflow: hidden;
+          position: absolute;
+          z-index: -1;
+        }
+
         #dialogHeader {
           background:var(--app-light-color);
           color:#000;
           font-family: 'Pacifico';
           text-align: center;
-
-padding: 16px;
-
-font-size: 20px;
+          padding: 16px;
+          font-size: 20px;
         }
 
         #dialogContainer {
@@ -51,9 +58,13 @@ font-size: 20px;
 
   render() {
     return html`
+      <input class="fileInput" accept="video/*" id="videoFileInput" @change="${this._getLocalFile}" type="file" />
       <div id="dialogContainer">
         <div id="dialogHeader">Upload Your Swing</div>
         <div style="padding:16px;">
+          <div>
+            <label for="videoFileInput">Choose a file</label>
+          </div>
           <paper-input placeholder="Choose a video"></paper-input>
           <div style="display:flex; flex-direction:row;">
             <paper-input placeholder="Club" style="width:45%"></paper-input>
@@ -69,6 +80,10 @@ font-size: 20px;
         </div>
       </div>
     `;
+  }
+
+  _getLocalFile(e){
+    console.log(e);
   }
 
   _cancel(){
