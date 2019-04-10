@@ -1,6 +1,8 @@
 import { LitElement, html, css } from 'lit-element';
 import { auth } from '../firebase.js';
 import { SharedStyles } from './shared-styles.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-button/paper-button.js';
 
 // This element is *not* connected to the Redux store.
 class GmUploader extends LitElement {
@@ -17,27 +19,61 @@ class GmUploader extends LitElement {
       SharedStyles,
       css`
         :host {
-          background: var(--app-dark-color);
+        }
+
+        .bottomNav {
+          padding:16px;
+          border-top:1px solid gainsboro;
+          display:flex;
+        }
+
+        paper-input {
+          --paper-input-container-focus-color:var(--app-dark-color);
+        }
+
+        #dialogHeader {
+          background:var(--app-light-color);
+          color:#000;
+          font-family: 'Pacifico';
+          text-align: center;
+
+padding: 16px;
+
+font-size: 20px;
+        }
+
+        #dialogContainer {
+          display:flex;
+          flex-direction:column;
         }`
     ];
   }
 
   render() {
     return html`
-      <div>Mr. Uplaoder</div>
-      <div @click="${this._cancel}">
-        Cancel
+      <div id="dialogContainer">
+        <div id="dialogHeader">Upload Your Swing</div>
+        <div style="padding:16px;">
+          <paper-input placeholder="Choose a video"></paper-input>
+          <div style="display:flex; flex-direction:row;">
+            <paper-input placeholder="Club" style="width:45%"></paper-input>
+            <div style="width:10%">&nbsp;</div>
+            <paper-input style="width:45%" placeholder="Handicap"></paper-input>
+          </div>
+        </div>
+        <div class="bottomNav" @click="${this._cancel}">
+          <paper-button style="color:blue;">Cancel</paper-button>
+          <div style="flex:1; text-align:right;">
+            <paper-button style="color:white;background:red;">Upload</paper-button>
+          </div>
+        </div>
       </div>
     `;
   }
 
   _cancel(){
-    //alert('cancel');
-    var x = this.dispatchEvent(new CustomEvent('closeUploadDialog', {bubbles: true, composed: true}));
-    console.log(x);
-    // send an event to close the dialog
+    this.dispatchEvent(new CustomEvent('closeUploadDialog', {bubbles: true, composed: true}));
   }
-
 }
 
 window.customElements.define('gm-uploader', GmUploader);

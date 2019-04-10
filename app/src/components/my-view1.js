@@ -32,6 +32,11 @@ class MyView1 extends PageViewElement {
           right: 40px;
         }
 
+        #uploadDialog {
+          margin:0;
+          padding:0;
+        }
+
         paper-fab {
           --paper-fab-background: var(--app-light-color);
         }`
@@ -66,8 +71,8 @@ class MyView1 extends PageViewElement {
 
       <paper-fab id="addVideoButton" icon="inline:plus" @click="${this._addVideoButtonClicked}"></paper-fab>
 
-      <paper-dialog id="uploadDialog" modal>
-        <gm-uploader></gm-uploader>
+      <paper-dialog id="uploadDialog" modal style="padding:0px;margin:0px;">
+        <gm-uploader style="padding:0px;margin:0px;"></gm-uploader>
       </paper-dialog>
     `;
   }
