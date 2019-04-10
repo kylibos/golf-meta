@@ -13,8 +13,14 @@ class GmUploader extends LitElement {
     return {
       name: { type: String },
       amount: { type: String },
-      price: { type: String }
+      price: { type: String },
+      _gotVideo: {type: Boolean}
     };
+  }
+
+  constructor() {
+    super();
+    this._gotVideo = false;
   }
 
   static get styles() {
@@ -57,6 +63,18 @@ class GmUploader extends LitElement {
           background:var(--app-dark-color);
         }
 
+        #thumbnailContainer {
+          position:relative;
+          padding:16px 32px;
+          color:rgba(0,0,0,.4);
+          background:white;
+          border:3px dashed rgba(0,0,0,.4);
+          border-radius:6px;
+          font-size:16px;
+          text-align:center;
+          display:block;
+        }
+
         #chooseButton {
           padding:16px 32px;
           color:rgba(0,0,0,.4);
@@ -69,8 +87,29 @@ class GmUploader extends LitElement {
           cursor:pointer;
         }
 
+        #cancelVideoButton {
+          position: absolute;
+          cursor:pointer;
+          background: white;
+          color: rgba(0,0,0,.4);
+          top: -10px;
+          left: -10px;
+          border: 2px solid rgba(0,0,0,.4);
+          border-radius: 50%;
+          padding: 4px;
+          width: 20px;
+        }
+
         #chooseButton:hover {
           background:whitesmoke;
+        }
+
+        .hide {
+          display:none !important;
+        }
+
+        .show {
+          display: block !important;
         }
 
         #dialogContainer {
@@ -86,11 +125,14 @@ class GmUploader extends LitElement {
       <div id="dialogContainer">
         <div id="dialogHeader">Upload Your Swing</div>
         <div style="padding:16px;">
-          <video width="150" height="150">
-            <source id="videoFile">
-            Your browser does not support HTML5 video.
-          </video>
-          <div>
+          <div id="thumbnailContainer" class="${this._gotVideo ? 'show' : 'hide'}">
+            <div id="cancelVideoButton">X</div>
+            <video width="150" height="150">
+              <source id="videoFile">
+              Your browser does not support HTML5 video.
+            </video>
+          </div>
+          <div class="${this._gotVideo ? 'hide' : 'show'}">
             <label for="videoFileInput" id="chooseButton">Choose a file ...</label>
           </div>
           <div style="display:flex; flex-direction:row;">
@@ -165,6 +207,7 @@ class GmUploader extends LitElement {
     console.log(e.target.files[0]);
     this.shadowRoot.getElementById('videoFile').src = URL.createObjectURL(e.target.files[0]);
     this.shadowRoot.getElementById('videoFile').parentElement.load();
+    this._gotVideo = true;
   }
 
   _cancel(){
