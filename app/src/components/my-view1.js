@@ -15,8 +15,10 @@ import { PageViewElement } from './page-view-element.js';
 import { SharedStyles } from './shared-styles.js';
 
 import '@polymer/paper-fab/paper-fab.js';
+import '@polymer/paper-dialog/paper-dialog.js';
 import '@polymer/iron-iconset-svg/iron-iconset-svg.js';
 import '@polymer/iron-icon/iron-icon.js';
+import './gm-uploader.js';
 
 class MyView1 extends PageViewElement {
   static get styles() {
@@ -28,6 +30,11 @@ class MyView1 extends PageViewElement {
           position: fixed;
           bottom:40px;
           right: 40px;
+        }
+
+        #uploadDialog {
+          margin:0;
+          padding:0;
         }
 
         paper-fab {
@@ -52,8 +59,25 @@ class MyView1 extends PageViewElement {
         Hey there, videos are going to go here.  You can't upload any video yet :(
       </div>
 
-      <paper-fab id="addVideoButton" icon="inline:plus" @click="${this.addVideoButtonClicked}"></paper-fab>
+      <paper-fab id="addVideoButton" icon="inline:plus" @click="${this._addVideoButtonClicked}"></paper-fab>
+
+      <paper-dialog id="uploadDialog" modal style="padding:0px;margin:0px;">
+        <gm-uploader style="padding:0px;margin:0px;"></gm-uploader>
+      </paper-dialog>
     `;
+  }
+
+  firstUpdated() {
+    console.log('create listener');
+    this.addEventListener('closeUploadDialog', (e) => this._closeDialog());
+  }
+
+  _closeDialog(){
+    this.shadowRoot.getElementById('uploadDialog').close();
+  }
+
+  _addVideoButtonClicked(){
+    this.shadowRoot.getElementById('uploadDialog').open();
   }
 }
 
