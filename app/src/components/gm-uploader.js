@@ -3,6 +3,9 @@ import { auth } from '../firebase.js';
 import { SharedStyles } from './shared-styles.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 
 // This element is *not* connected to the Redux store.
 class GmUploader extends LitElement {
@@ -49,6 +52,27 @@ class GmUploader extends LitElement {
           font-size: 20px;
         }
 
+        .button {
+          color:white;
+          background:var(--app-dark-color);
+        }
+
+        #chooseButton {
+          padding:16px 32px;
+          color:rgba(0,0,0,.4);
+          background:white;
+          border:3px dashed rgba(0,0,0,.4);
+          border-radius:6px;
+          font-size:16px;
+          text-align:center;
+          display:block;
+          cursor:pointer;
+        }
+
+        #chooseButton:hover {
+          background:whitesmoke;
+        }
+
         #dialogContainer {
           display:flex;
           flex-direction:column;
@@ -62,20 +86,75 @@ class GmUploader extends LitElement {
       <div id="dialogContainer">
         <div id="dialogHeader">Upload Your Swing</div>
         <div style="padding:16px;">
+          <video width="150" height="150">
+            <source id="videoFile">
+            Your browser does not support HTML5 video.
+          </video>
           <div>
-            <label for="videoFileInput">Choose a file</label>
+            <label for="videoFileInput" id="chooseButton">Choose a file ...</label>
           </div>
-          <paper-input placeholder="Choose a video"></paper-input>
           <div style="display:flex; flex-direction:row;">
-            <paper-input placeholder="Club" style="width:45%"></paper-input>
+            <paper-dropdown-menu label="Club">
+              <paper-listbox slot="dropdown-content" class="dropdown-content">
+                <paper-item>Driver</paper-item>
+                <paper-item>3 wood</paper-item>
+                <paper-item>5 wood</paper-item>
+                <paper-item>2 hybrid</paper-item>
+                <paper-item>3 hybrid</paper-item>
+                <paper-item>4 hybrid</paper-item>
+                <paper-item>5 hybrid</paper-item>
+                <paper-item>2 iron</paper-item>
+                <paper-item>3 iron</paper-item>
+                <paper-item>4 iron</paper-item>
+                <paper-item>5 iron</paper-item>
+                <paper-item>6 iron</paper-item>
+                <paper-item>7 iron</paper-item>
+                <paper-item>8 iron</paper-item>
+                <paper-item>9 iron</paper-item>
+                <paper-item>Aw</paper-item>
+                <paper-item>Pw</paper-item>
+                <paper-item>Gw</paper-item>
+                <paper-item>Can't Remember</paper-item>
+              </paper-listbox>
+            </paper-dropdown-menu>
             <div style="width:10%">&nbsp;</div>
-            <paper-input style="width:45%" placeholder="Handicap"></paper-input>
+            <paper-dropdown-menu label="Handicap">
+              <paper-listbox slot="dropdown-content" class="dropdown-content">
+                <paper-item>No Handicap</paper-item>
+                <paper-item>0</paper-item>
+                <paper-item>1</paper-item>
+                <paper-item>2</paper-item>
+                <paper-item>3</paper-item>
+                <paper-item>4</paper-item>
+                <paper-item>5</paper-item>
+                <paper-item>6</paper-item>
+                <paper-item>7</paper-item>
+                <paper-item>8</paper-item>
+                <paper-item>9</paper-item>
+                <paper-item>10</paper-item>
+                <paper-item>11</paper-item>
+                <paper-item>12</paper-item>
+                <paper-item>13</paper-item>
+                <paper-item>14</paper-item>
+                <paper-item>15</paper-item>
+                <paper-item>16</paper-item>
+                <paper-item>17</paper-item>
+                <paper-item>18</paper-item>
+                <paper-item>19</paper-item>
+                <paper-item>20</paper-item>
+                <paper-item>21</paper-item>
+                <paper-item>22</paper-item>
+                <paper-item>23</paper-item>
+                <paper-item>24</paper-item>
+                <paper-item>25</paper-item>
+              </paper-listbox>
+            </paper-dropdown-menu>
           </div>
         </div>
         <div class="bottomNav" @click="${this._cancel}">
           <paper-button style="color:blue;">Cancel</paper-button>
           <div style="flex:1; text-align:right;">
-            <paper-button style="color:white;background:red;">Upload</paper-button>
+            <paper-button class="button">Upload</paper-button>
           </div>
         </div>
       </div>
@@ -83,7 +162,9 @@ class GmUploader extends LitElement {
   }
 
   _getLocalFile(e){
-    console.log(e);
+    console.log(e.target.files[0]);
+    this.shadowRoot.getElementById('videoFile').src = URL.createObjectURL(e.target.files[0]);
+    this.shadowRoot.getElementById('videoFile').parentElement.load();
   }
 
   _cancel(){
