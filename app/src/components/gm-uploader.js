@@ -248,9 +248,9 @@ class GmUploader extends connect(store)(LitElement) {
       return false;
     }
 
-    if (this._videoFile.size > 10000000){
+    if (this._videoFile.size > 70000000){
       console.log(this._videoFile.size);
-      this._uploadError = 'You video file is too big.  10MB is the max.';
+      this._uploadError = 'You video file is too big.  70MB is the max.';
       return false;
     }
 
