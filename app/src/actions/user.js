@@ -5,7 +5,6 @@ export const SIGN_OUT_USER = 'SIGN_OUT_USER';
 
 export const signInUser = (user) => (dispatch, getState) => {
 	// check for username
-	console.log('dispatch action user', user.providerData[0].uid);
 	firebase.firestore().collection('users').doc(user.uid).get().then((doc) => {
 		if (doc.exists) {
 			if (doc.data().username){

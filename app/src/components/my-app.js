@@ -287,7 +287,6 @@ class MyApp extends connect(store)(LitElement) {
     this._drawerOpened = state.app.drawerOpened;
     this._signedIn = state.user.signedIn;
     this._photoURL = state.user.photoURL;
-    console.log('THIS USER', state.user);
   }
 
   _signOut(){
