@@ -34,6 +34,9 @@ const loadPage = (page) => (dispatch) => {
         // navigating to view1 after my-view1.js is loaded.
       });
       break;
+    case 'swingplayer':
+      import('../components/gm-swingplayer.js');
+      break;
     case 'view2':
       import('../components/my-view2.js');
       break;

@@ -30,6 +30,22 @@
       "type": "script",
       "weight": 1
     }
+  },  
+  "/swingplayer": {
+    "src/components/my-app.js": {
+      "crossorigin": "anonymous",
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/gm-swingplayer.js": {
+      "crossorigin": "anonymous",
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
   },
   "/view2": {
     "src/components/my-app.js": {
