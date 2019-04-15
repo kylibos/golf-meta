@@ -67,7 +67,7 @@ class MyView1 extends connect(store)(PageViewElement) {
       </iron-iconset-svg>
 
       <div id="videosContainer">
-        ${this._swings.map((item) => html`<a href="/swingplayer?sw=${item.key}">${item.club}</a><br />`)}
+        ${this._swings.map((item) => html`<a href="/swingplayer?id=${item.key}">${item.club}</a><br />`)}
       </div>
 
       <paper-fab id="addVideoButton" icon="inline:plus" @click="${this._addVideoButtonClicked}"></paper-fab>
