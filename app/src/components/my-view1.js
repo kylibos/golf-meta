@@ -10,6 +10,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
+import { connect } from 'pwa-helpers/connect-mixin.js';
+
+// This element is connected to the Redux store.
+import { store } from '../store.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles.js';
@@ -20,7 +24,14 @@ import '@polymer/iron-iconset-svg/iron-iconset-svg.js';
 import '@polymer/iron-icon/iron-icon.js';
 import './gm-uploader.js';
 
-class MyView1 extends PageViewElement {
+class MyView1 extends connect(store)(PageViewElement) {
+
+  static get properties() {
+    return {
+      _swings: {type: Array}
+    };
+  }
+
   static get styles() {
     return [
       SharedStyles,
@@ -55,8 +66,8 @@ class MyView1 extends PageViewElement {
         </svg>
       </iron-iconset-svg>
 
-      <div>
-        Hey there, videos are going to go here.  You can't upload any video yet :(
+      <div id="videosContainer">
+        ${this._swings.map((item) => html`<a href="/swingvideo?sw=${item.key}"><img id="${item.key}" src="${item.sproutData.assets.thumbnails[0]}" /></a>`)}
       </div>
 
       <paper-fab id="addVideoButton" icon="inline:plus" @click="${this._addVideoButtonClicked}"></paper-fab>
@@ -78,6 +89,10 @@ class MyView1 extends PageViewElement {
 
   _addVideoButtonClicked(){
     this.shadowRoot.getElementById('uploadDialog').open();
+  }
+
+  stateChanged(state) {
+    this._swings = state.swings.swings;
   }
 }
 

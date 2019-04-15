@@ -30,6 +30,10 @@ import {
 } from '../actions/app.js';
 
 import {
+  updateSwings
+} from '../actions/swings.js';
+
+import {
   signInUser,
   signOutUser
 } from '../actions/user.js';
@@ -280,7 +284,36 @@ class MyApp extends connect(store)(LitElement) {
     store.dispatch(updateDrawerState(e.target.opened));
   }
 
+  _getSwings(){
+    var swings = [];
+    firebase.firestore().collection('swings').get()
+    .then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+            var i = swings.push(doc.data());
+            swings[i-1].key = doc.id;
+        });
+        console.log('GOT DEM SWINGS', swings);
+      // Send the data to the store
+      store.dispatch(updateSwings(swings));
+    })
+    .catch(function(error) {
+        console.log("Error getting documents: ", error);
+    });
+  }
+
   stateChanged(state) {
+
+
+    //if (state.user.signedIn != this._signedIn || typeof this._swings == 'undefined' || state.swings.swings.length != this._swings.length){
+      //if (state.user.signedIn == true && this._signedIn != 'unresolved' && state.app.swings && state.app.swings.length == 0){
+if (state.user.signedIn == true && state.swings.swings.length == 0){
+        console.log('GET DEM SWINGS');    
+        console.log(state.user.signedIn, this._signedIn);
+    console.log(state.swings.swings.length, this._swings.length);
+        this._getSwings();
+      }
+    //}
+    this._swings = state.swings.swings;
     this._page = state.app.page;
     this._offline = state.app.offline;
     this._snackbarOpened = state.app.snackbarOpened;

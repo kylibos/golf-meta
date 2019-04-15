@@ -21,6 +21,7 @@ const INITIAL_STATE = {
   offline: false,
   drawerOpened: false,
   snackbarOpened: false,
+  swings: []
 };
 
 const app = (state = INITIAL_STATE, action) => {
