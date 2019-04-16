@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'lit-element';
-import { auth } from '../firebase.js';
 import { SharedStyles } from './shared-styles.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { firebase } from '../firebase.js';

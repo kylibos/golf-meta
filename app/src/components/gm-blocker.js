@@ -58,7 +58,7 @@ class GmBlocker extends LitElement {
       <div id="subTitle">Share Your Swing</div>
       <div @click="${this.signInGoogle}" style="cursor:pointer;color:#757575; background:white; display:inline-block;">
         <div style="display:flex; flex-direction:row; padding:8px 16px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);">
-          <img style="height:18px; width:18px;" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" />
+          <img style="height:18px; width:18px;" src="/images/google.svg" />
           <div style="font-size:14px; vertical-align:middle; padding-left:16px;">Sign In With Google</div>
         </div>
       </div>    

@@ -1,7 +1,7 @@
 import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
-import { playIcon, pauseIcon, skipForwardIcon, skipBackwardIcon } from './my-icons.js';
+import { playIcon, pauseIcon, skipForwardIcon, skipBackwardIcon, backIcon } from './my-icons.js';
 import '@polymer/paper-slider/paper-slider.js';
 
 // This element is connected to the Redux store.
@@ -62,8 +62,27 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           display: none !important;
         }
 
+        paper-slider {
+          --paper-slider-active-color: var(--app-color);
+          --paper-slider-pin-color: var(--app-color);
+          --paper-slider-knob-color: var(--app-color);
+          --paper-slider-knob-start-border-color: var(--app-color);
+          --paper-slider-font-color: #000;
+          --paper-slider-container-color: rgba(0,0,0,.4);
+          --paper-slider-height: 10px;
+        }
+
+        .backIcon {
+          color: var(--app-color);
+          background: rgba(0,0,0,.4);
+          border-radius:50%;
+          height:40px;
+          width:40px;
+          margin:16px;
+        }
+
         .icon {
-          background:var(--app-color);
+          background:rgba(0,0,0,.4);
           color:black;
           border-radius:50%;
           height:60px;
@@ -73,7 +92,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
 
         .bigIcon {
           margin-bottom:6px;
-          background:var(--app-color);
+          background:rgba(0,0,0,.4);
           color:black;
           border-radius:50%;
           height:80px;
@@ -92,13 +111,14 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   render() {
     return html`
       <div id="playerContainer">
-        <video id="video" src="${this._videoURL}"></video>
+        <video id="video" src="${this._videoURL}" preload></video>
       </div>
       <div id="playerControlsContainer">
-        <div style="flex:1;">...</div>
+        <div style="flex:1;">
+          <div class="backIcon">${backIcon}</div>
+        </div>
         <div style="display:flex; flex-direction:row;">
           <div style="flex:1;display:flex;align-items:flex-end;padding:16px;">
-            <div style="color:red;">${this._videoCurrentTime}</div>
             <paper-slider id="slider" min="0" max="${this._videoDuration}" pin="true" step=".1" value="${this._videoCurrentTime}" style="width:100%;"></paper-slider>
           </div>
           <div style="padding:16px;align-items: center; display: flex;flex-direction: column;">
@@ -156,6 +176,10 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     }).url;
 
     let v = this.shadowRoot.getElementById("video");
+
+    v.onprogress = function(e) {
+      console.log(e.total, e.loaded);
+    }; 
 
     v.ontimeupdate = () => {
       console.log(v.currentTime);
