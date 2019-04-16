@@ -1,7 +1,7 @@
 import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
-import { playIcon, pauseIcon, skipForwardIcon, skipBackwardIcon, backIcon } from './my-icons.js';
+import { playIcon, pauseIcon, skipForwardIcon, skipBackwardIcon, backIcon, pullOutIcon, pushInIcon } from './my-icons.js';
 import '@polymer/paper-slider/paper-slider.js';
 
 // This element is connected to the Redux store.
@@ -22,7 +22,8 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       _swings: {type: Array},
       _isPaused: {type: Boolean},
       _videoDuration: {type: Number},
-      _videoCurrentTime: {type: Number}
+      _videoCurrentTime: {type: Number},
+      _showPositions: {type:Boolean}
     };
   }
 
@@ -63,6 +64,14 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           top:0px;
           right:0px;
           text-align:center;
+        }
+
+       .showPositions {
+          display: flex !important;
+        }
+
+        .hidePositions {
+          display: none !important;
         }
 
         .show {
@@ -108,6 +117,38 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           border-radius:50%;
           height:80px;
           width:80px;
+        }
+
+        #positionContainer {
+          background:rgba(0,0,0,.4);
+          display:flex;
+          flex-direction:row;
+        }
+
+        .pButton {
+          color: var(--app-color);
+          font-weight:800;
+          padding:8px;
+          font-size:22px;
+          height:32px;
+          border-bottom:1px solid #000;
+          border-right:1px solid #000;
+          text-align:center;
+        }
+        #pushInIcon {
+          background:rgba(0,0,0,.4);
+          height:40px;
+          width:40px;
+          border-top-left-radius:50%;
+          border-bottom-left-radius:50%;
+        }
+
+        #pullOutIcon {
+          background:rgba(0,0,0,.4);
+          height:40px;
+          width:40px;
+          border-top-left-radius:50%;
+          border-bottom-left-radius:50%;
         }`
     ];
   }
@@ -117,16 +158,37 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     this._isPaused = true;
     this._videoDuration = 0;
     this._videoCurrentTime = 0;
+    this._showPositions = false;
   }
 
   render() {
     return html`
       <div id="playerContainer">
-        <video id="video" src="${this._videoURL}" preload></video>
+        <video id="video" src="${this._videoURL}" preload="auto" muted></video>
       </div>
       <div id="playerControlsContainer">
-        <div style="flex:1;">
-          <div class="backIcon">${backIcon}</div>
+        <div>
+          <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
+        </div>
+        <div style="flex:1; flex-direction:row;display:flex; align-items:center; justify-content:right;">
+          <div id="pullOutIcon" @click="${this._showPositionButtons}" class="${this._showPositions ? 'hide' : 'show'}">${pullOutIcon}</div>
+          <div id="pushInIcon" @click="${this._hidePositionButtons}" class="${this._showPositions ? 'show' : 'hide'}">${pushInIcon}</div>
+          <div id="positionContainer" class="${this._showPositions ? 'showPositions' : 'hidePositions'}">
+            <div>
+            <div class="pButton">P1</div>
+            <div class="pButton">P3</div>
+            <div class="pButton">P5</div>
+            <div class="pButton">P7</div>
+            <div class="pButton">P9</div>
+            </div>
+            <div>
+            <div class="pButton">P2</div>
+            <div class="pButton">P4</div>
+            <div class="pButton">P6</div>
+            <div class="pButton">P8</div>
+            <div class="pButton">P10</div>
+            </div>
+          </div>
         </div>
         <div style="display:flex; flex-direction:row;">
           <div style="flex:1;display:flex;align-items:flex-end;padding:16px;">
@@ -153,6 +215,19 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
 
   firstUpdated(){
 
+  }
+
+  _showPositionButtons(){
+    this._showPositions = true;
+    console.log('show');
+  }
+  _hidePositionButtons(){
+    this._showPositions = false;
+    console.log('hide');
+  }
+
+  _goBack(){
+    window.history.back();
   }
 
   _skipBackward(){
@@ -189,7 +264,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     let v = this.shadowRoot.getElementById("video");
 
     v.onprogress = function(e) {
-      console.log(e.total, e.loaded);
+      //console.log(e.total, e.loaded);
     }; 
 
     v.ontimeupdate = () => {
@@ -202,6 +277,9 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       var slider = this.shadowRoot.getElementById('slider');
       slider.addEventListener('immediate-value-change', (e) => {
         v.currentTime = slider.immediateValue;
+      });
+      slider.addEventListener('change', (e) => {
+        v.currentTime = slider.value;
       });
     }; 
   }
