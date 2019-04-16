@@ -152,8 +152,8 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     this._showPositions = false;
     this._windowHeight = 0;
     this._windowWidth = 0;
-    this._videoHeight = '200px';
-    this._videoWidth = '200px';
+    this._videoHeight = '0px';
+    this._videoWidth = '0px';
     window.addEventListener('resize', () => {
       this._windowHeight = window.innerHeight;
       this._windowWidth = window.innerWidth;
@@ -162,17 +162,19 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   }
 
   _fitVideo(){
+    console.log('FIT VIDEO');
+    console.log('this._windowWidth',this._windowWidth,'this._windowHeight',this._windowHeight);
     let windowAspectRatio = this._windowWidth/this._windowHeight;
     let videoAspectRatio = this._initialVideoWidth/this._initialVideoHeight;
 
     if (windowAspectRatio > videoAspectRatio){
       console.log('window is wider');
-      this._videoHeight = this._windowHeight;
-      this._videoWidth = this._videoHeight*videoAspectRatio;
+      this._videoHeight = this._windowHeight+'px';
+      this._videoWidth = (this._videoHeight*videoAspectRatio)+'px';
     } else {
       console.log('video is wider');
-      this._videoWidth = this._windowWidth;
-      this._videoHeight = this._videoWidth*(1/videoAspectRatio);
+      this._videoWidth = this._windowWidth+'px';
+      this._videoHeight = (this._videoWidth*(1/videoAspectRatio))+'px';
     }
 /*
     if (aspect ratio of container > aspect ratio of image)
@@ -308,6 +310,9 @@ else
       });
       this._initialVideoHeight = v.videoHeight;
       this._initialVideoWidth = v.videoWidth;
+      this._windowHeight = window.innerHeight;
+      this._windowWidth = window.innerWidth;
+      this._fitVideo();
     }; 
   }
 
