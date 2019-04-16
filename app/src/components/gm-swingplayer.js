@@ -157,6 +157,11 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
 
     let v = this.shadowRoot.getElementById("video");
 
+    v.ontimeupdate = () => {
+      console.log(v.currentTime);
+      this._videoCurrentTime = parseFloat( v.currentTime.toFixed(1) );
+    };
+
     v.oncanplay = () => {
       this._videoDuration = v.duration;
       var slider = this.shadowRoot.getElementById('slider');
