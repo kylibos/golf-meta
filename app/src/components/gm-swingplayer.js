@@ -23,7 +23,13 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       _isPaused: {type: Boolean},
       _videoDuration: {type: Number},
       _videoCurrentTime: {type: Number},
-      _showPositions: {type:Boolean}
+      _showPositions: {type:Boolean},
+      _windowHeight: {type: Number},
+      _windowWidth: {type: Number},
+      _initialVideoHeight: {type: Number},
+      _initialVideoWidth: {type: Number},
+      _videoHeight: {type: Number},
+      _videoWidth: {type: Number}
     };
   }
 
@@ -31,21 +37,6 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     return [
       SharedStyles,
       css`
-        video {
-          min-width: 100%; 
-          min-height: 100%; 
-          
-          /* Setting width & height to auto prevents the browser from stretching or squishing the video */
-          width: auto;
-          height: auto;
-          
-          /* Center the video */
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%,-50%);
-        }
-
         #playerControlsContainer {
           position:fixed;
           bottom:0px;
@@ -159,12 +150,46 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     this._videoDuration = 0;
     this._videoCurrentTime = 0;
     this._showPositions = false;
+    this._windowHeight = 0;
+    this._windowWidth = 0;
+    this._videoHeight = '200px';
+    this._videoWidth = '200px';
+    window.addEventListener('resize', () => {
+      this._windowHeight = window.innerHeight;
+      this._windowWidth = window.innerWidth;
+      this._fitVideo();
+    }, false);
+  }
+
+  _fitVideo(){
+    let windowAspectRatio = this._windowWidth/this._windowHeight;
+    let videoAspectRatio = this._initialVideoWidth/this._initialVideoHeight;
+
+    if (windowAspectRatio > videoAspectRatio){
+      console.log('window is wider');
+      this._videoHeight = this._windowHeight;
+      this._videoWidth = this._videoHeight*videoAspectRatio;
+    } else {
+      console.log('video is wider');
+      this._videoWidth = this._windowWidth;
+      this._videoHeight = this._videoWidth*(1/videoAspectRatio);
+    }
+/*
+    if (aspect ratio of container > aspect ratio of image)
+    image-height = container height
+    image-width = aspect-ratio-preserved width
+
+else
+    image-width = container width
+    image-height = aspect-ratio-preserved height
+    */
   }
 
   render() {
     return html`
       <div id="playerContainer">
-        <video id="video" src="${this._videoURL}" preload="auto" muted></video>
+          <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" preload="auto" muted></video>
+        
       </div>
       <div id="playerControlsContainer">
         <div>
@@ -281,6 +306,8 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       slider.addEventListener('change', (e) => {
         v.currentTime = slider.value;
       });
+      this._initialVideoHeight = v.videoHeight;
+      this._initialVideoWidth = v.videoWidth;
     }; 
   }
 
