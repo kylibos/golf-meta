@@ -1,5 +1,3 @@
-import { firestore } from '../firebase.js';
-
 export const UPDATE_SWINGS = 'UPDATE_SWINGS';
 
 export const updateSwings = (swings) => {

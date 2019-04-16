@@ -24,7 +24,7 @@ import '@polymer/iron-iconset-svg/iron-iconset-svg.js';
 import '@polymer/iron-icon/iron-icon.js';
 import './gm-uploader.js';
 
-class MyView1 extends connect(store)(PageViewElement) {
+class GmHome extends connect(store)(PageViewElement) {
 
   static get properties() {
     return {
@@ -96,4 +96,4 @@ class MyView1 extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('my-view1', MyView1);
+window.customElements.define('gm-home', GmHome);

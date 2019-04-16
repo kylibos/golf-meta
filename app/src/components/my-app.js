@@ -216,7 +216,7 @@ class MyApp extends connect(store)(LitElement) {
           .opened="${this._drawerOpened}"
           @opened-changed="${this._drawerOpenedChanged}">
         <nav class="drawer-list">
-          <a ?selected="${this._page === 'view1'}" href="/view1">Videos</a>
+          <a ?selected="${this._page === 'home'}" href="/home">Videos</a>
           <a ?selected="${this._page === 'view2'}" href="/view2">View Two</a>
           <a ?selected="${this._page === 'view3'}" href="/view3">View Three</a>
         </nav>
@@ -225,7 +225,7 @@ class MyApp extends connect(store)(LitElement) {
       <!-- Main content -->
       <main role="main" class="main-content">
         <gm-swingplayer class="page" ?active="${this._page === 'swingplayer'}"></gm-swingplayer>
-        <my-view1 class="page" ?active="${this._page === 'view1'}"></my-view1>
+        <gm-home class="page" ?active="${this._page === 'home'}"></gm-home>
         <my-view2 class="page" ?active="${this._page === 'view2'}"></my-view2>
         <my-view3 class="page" ?active="${this._page === 'view3'}"></my-view3>
         <my-view404 class="page" ?active="${this._page === 'view404'}"></my-view404>

@@ -1,6 +1,4 @@
 import { UPDATE_SWINGS } from '../actions/swings.js';
-import { firestore } from '../firebase.js';
-import { auth } from '../firebase.js';
 
 const INITIAL_STATE = {
   swings: []
