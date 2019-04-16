@@ -31,7 +31,18 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       SharedStyles,
       css`
         video {
-          height: 100%;
+          min-width: 100%; 
+          min-height: 100%; 
+          
+          /* Setting width & height to auto prevents the browser from stretching or squishing the video */
+          width: auto;
+          height: auto;
+          
+          /* Center the video */
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%,-50%);
         }
 
         #playerControlsContainer {
