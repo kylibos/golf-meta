@@ -66,21 +66,21 @@ class GmLogin extends LitElement {
       <div id="signInButtonContainer">
         <div class="button" @click="${this._signInGoogle}" style="cursor:pointer;color:#757575; background:white; display:inline-block;">
           <div style="display:flex; flex-direction:row; padding:8px 16px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);">
-            <img style="height:18px; width:18px;" src="/images/google.svg" />
+            <img style="height:18px; width:18px;" src="images/google.svg" />
             <div style="font-size:14px; vertical-align:middle; padding-left:16px;">Sign In With Google</div>
           </div>
         </div>       
         <div style="height:10px;"></div>
         <div class="button" @click="${this._signInTwitter}" style="cursor:pointer;color:#fff; background:#1da1f2; display:inline-block;">
           <div style="display:flex; flex-direction:row; padding:4px 16px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);">
-            <img style="height:28px; width:28px;" src="/images/twitterLogo.png" />
+            <img style="height:28px; width:28px;" src="images/twitterLogo.png" />
             <div style="font-size:14px; display:flex; justify-content:center; flex-direction:column; padding-left:16px;">Sign In With Twitter</div>
           </div>
         </div>         
         <div style="height:10px;"></div>
         <div class="button" @click="${this._signInMicrosoft}" style="cursor:pointer;color:#fff; background:#000; display:inline-block;">
           <div style="display:flex; flex-direction:row; padding:8px 16px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);">
-            <img style="height:18px; width:18px;" src="/images/microsoftLogo.svg" />
+            <img style="height:18px; width:18px;" src="images/microsoftLogo.svg" />
             <div style="font-size:14px; vertical-align:middle; padding-left:16px;">Sign In With Microsoft</div>
           </div>
         </div> 
@@ -88,7 +88,7 @@ class GmLogin extends LitElement {
         <div style="height:10px;"></div>
         <div class="button" @click="${this._signInYahoo}" style="cursor:pointer;color:#fff; background:purple; display:inline-block;">
           <div style="display:flex; flex-direction:row; padding:8px 16px; box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);">
-            <img style="height:18px; width:18px;" src="/images/yahooIcon.svg" />
+            <img style="height:18px; width:18px;" src="images/yahooIcon.svg" />
             <div style="font-size:14px; vertical-align:middle; padding-left:16px;">Sign In With Yahoo</div>
           </div>
         </div> 
