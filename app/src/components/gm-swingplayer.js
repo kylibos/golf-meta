@@ -90,6 +90,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           height:40px;
           width:40px;
           margin:16px;
+          cursor:pointer;
         }
 
         .icon {
@@ -99,6 +100,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           height:60px;
           width:60px;
           margin-bottom:6px;
+          cursor:pointer;
         }
 
         .bigIcon {
@@ -108,12 +110,15 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           border-radius:50%;
           height:80px;
           width:80px;
+          cursor:pointer;
         }
 
         #positionContainer {
           background:rgba(0,0,0,.4);
           display:flex;
           flex-direction:row;
+          border:1px solid var(--app-color);
+          border-right:none;
         }
 
         .pButton {
@@ -125,13 +130,24 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           border-bottom:1px solid #000;
           border-right:1px solid #000;
           text-align:center;
+          cursor:pointer;
         }
+
+        .pButton:hover {
+          background:#000;
+        }
+
         #pushInIcon {
           background:rgba(0,0,0,.4);
           height:40px;
           width:40px;
           border-top-left-radius:50%;
           border-bottom-left-radius:50%;
+          border:1px solid var(--app-color);
+          border-right:1px solid #000;
+          position:relative;
+          right:-1px;
+          cursor:pointer;
         }
 
         #pullOutIcon {
@@ -140,6 +156,9 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           width:40px;
           border-top-left-radius:50%;
           border-bottom-left-radius:50%;
+          border:1px solid var(--app-color);
+          border-right:none;
+          cursor:pointer;
         }`
     ];
   }
@@ -162,29 +181,16 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   }
 
   _fitVideo(){
-    console.log('FIT VIDEO');
-    console.log('this._windowWidth',this._windowWidth,'this._windowHeight',this._windowHeight);
     let windowAspectRatio = this._windowWidth/this._windowHeight;
     let videoAspectRatio = this._initialVideoWidth/this._initialVideoHeight;
 
     if (windowAspectRatio > videoAspectRatio){
-      console.log('window is wider');
       this._videoHeight = this._windowHeight+'px';
       this._videoWidth = (this._videoHeight*videoAspectRatio)+'px';
     } else {
-      console.log('video is wider');
       this._videoWidth = this._windowWidth+'px';
       this._videoHeight = (this._videoWidth*(1/videoAspectRatio))+'px';
     }
-/*
-    if (aspect ratio of container > aspect ratio of image)
-    image-height = container height
-    image-width = aspect-ratio-preserved width
-
-else
-    image-width = container width
-    image-height = aspect-ratio-preserved height
-    */
   }
 
   render() {
@@ -246,11 +252,9 @@ else
 
   _showPositionButtons(){
     this._showPositions = true;
-    console.log('show');
   }
   _hidePositionButtons(){
     this._showPositions = false;
-    console.log('hide');
   }
 
   _goBack(){
@@ -284,9 +288,11 @@ else
   updated(changedProps){
     var parsedUrl = new URL(window.location.href);
     this._videoId = parsedUrl.searchParams.get("id");
-    this._videoURL = this._swings.find(obj => {
-      return obj.key === this._videoId;
-    }).url;
+    if (this._swings.length > 0){
+      this._videoURL = this._swings.find(obj => {
+        return obj.key === this._videoId;
+      }).url;
+    }
 
     let v = this.shadowRoot.getElementById("video");
 

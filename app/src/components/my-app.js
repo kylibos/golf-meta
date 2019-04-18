@@ -293,12 +293,10 @@ class MyApp extends connect(store)(LitElement) {
             var i = swings.push(doc.data());
             swings[i-1].key = doc.id;
         });
-        console.log('GOT DEM SWINGS', swings);
-      // Send the data to the store
       store.dispatch(updateSwings(swings));
     })
     .catch(function(error) {
-        console.log("Error getting documents: ", error);
+        //console.log("Error getting documents: ", error);
     });
   }
 
@@ -308,9 +306,6 @@ class MyApp extends connect(store)(LitElement) {
     //if (state.user.signedIn != this._signedIn || typeof this._swings == 'undefined' || state.swings.swings.length != this._swings.length){
       //if (state.user.signedIn == true && this._signedIn != 'unresolved' && state.app.swings && state.app.swings.length == 0){
 if (state.user.signedIn == true && state.swings.swings.length == 0){
-        console.log('GET DEM SWINGS');    
-        console.log(state.user.signedIn, this._signedIn);
-    console.log(state.swings.swings.length, this._swings.length);
         this._getSwings();
       }
     //}
