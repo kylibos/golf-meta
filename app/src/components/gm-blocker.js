@@ -20,7 +20,7 @@ class GmBlocker extends LitElement {
       css`
         :host {
           display: block;
-          background: red;
+          background: var(--app-color);
           position: fixed;
           top:0;
           bottom:0;

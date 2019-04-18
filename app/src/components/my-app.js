@@ -96,13 +96,12 @@ class MyApp extends connect(store)(LitElement) {
           left: 0;
           width: 100%;
           text-align: center;
-          background-color: var(--app-dark-color);
           color: white;
           border-bottom: 1px solid #eee;
         }
 
         .toolbar-top {
-          background-color: var(--app-dark-color);
+          background-color: var(--app-color);
         }
 
         [main-title] {
@@ -111,7 +110,6 @@ class MyApp extends connect(store)(LitElement) {
           /* In the narrow layout, the toolbar is offset by the width of the
           drawer button, and the text looks not centered. Add a padding to
           match that button */
-          text-shadow: 2px 2px #795548;
         }
 
 
@@ -273,6 +271,7 @@ class MyApp extends connect(store)(LitElement) {
     });
 
     firebase.auth().getRedirectResult().then(function(result) {
+      console.log('redirect result',result);
       if (result.credential) {
         // This gives you a Google Access Token. You can use it to access the Google API.
         var token = result.credential.accessToken;
@@ -348,6 +347,7 @@ class MyApp extends connect(store)(LitElement) {
     this._drawerOpened = state.app.drawerOpened;
     this._signedIn = state.user.signedIn;
     this._photoURL = state.user.photoURL;
+    console.log(state.user);
     if (this._signedIn === false){
       this._block = false;
     }

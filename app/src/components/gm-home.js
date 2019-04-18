@@ -49,7 +49,7 @@ class GmHome extends connect(store)(PageViewElement) {
         }
 
         paper-fab {
-          --paper-fab-background: var(--app-dark-color);
+          --paper-fab-background: var(--app-color);
         }`
     ];
   }

@@ -48,6 +48,8 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
         }
 
         #playerContainer {
+          display:flex;
+          justify-content:center;
           position:fixed;
           width:100%;
           height:100%;
