@@ -16,6 +16,7 @@ import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
+import './gm-login.js';
 import './gm-blocker.js';
 import { SharedStyles } from './shared-styles.js';
 
@@ -57,6 +58,7 @@ class MyApp extends connect(store)(LitElement) {
       _snackbarOpened: { type: Boolean },
       _offline: { type: Boolean },
       _signedIn: {type: Boolean},
+      _block: {type: Boolean},
       _photoURL: {type: String}
     };
   }
@@ -204,7 +206,7 @@ class MyApp extends connect(store)(LitElement) {
           <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
           <div main-title>Golf Meta</div>
           <div @click="${this._signOut}" style="display:flex; align-items: center; cursor:pointer;">
-            <img style="border-radius:50%; height:40px;" src="${this._photoURL}" />
+            x<img style="border-radius:50%; height:40px;" src="${this._photoURL}" />
           </div>
         </app-toolbar>
 
@@ -235,7 +237,8 @@ class MyApp extends connect(store)(LitElement) {
         <p>Made with &hearts; by the Polymer team.</p>
       </footer>
 
-      <gm-blocker class="${this._signedIn ? 'hide' : 'show'}"></gm-blocker>
+      <gm-login class="${this._signedIn ? 'hide' : 'show'}"></gm-login>
+      <gm-blocker class="${this._block ? 'show' : 'hide'}"></gm-blocker>
 
       <snack-bar ?active="${this._snackbarOpened}">
         You are now ${this._offline ? 'offline' : 'online'}.
@@ -249,13 +252,44 @@ class MyApp extends connect(store)(LitElement) {
     // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
 
+    this._block = true;
+
     firebase.auth().onAuthStateChanged((user) => {
       if (user){
-        store.dispatch(signInUser(user));
+        firebase.firestore().collection('userMethods').doc(user.uid).set({
+          displayName: user.providerData[0].displayName,
+          email: user.providerData[0].email,
+          photoURL: user.providerData[0].photoURL,
+          providerId: user.providerData[0].providerId,
+          phoneNumber: user.providerData[0].phoneNumber,
+          uid: user.providerData[0].uid
+        }, {merge: true});
+
+        store.dispatch(signInUser(user.providerData[0]));
       } else {
         store.dispatch(signOutUser());
       }
       //console.log('auth state changed', user);
+    });
+
+    firebase.auth().getRedirectResult().then(function(result) {
+      if (result.credential) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        var token = result.credential.accessToken;
+        //console.log('token', token);
+        // ...
+      }
+      // The signed-in user info.
+      var user = result.user;
+    }).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
     });
   }
 
@@ -301,13 +335,11 @@ class MyApp extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-
-
     //if (state.user.signedIn != this._signedIn || typeof this._swings == 'undefined' || state.swings.swings.length != this._swings.length){
-      //if (state.user.signedIn == true && this._signedIn != 'unresolved' && state.app.swings && state.app.swings.length == 0){
-if (state.user.signedIn == true && state.swings.swings.length == 0){
-        this._getSwings();
-      }
+    //if (state.user.signedIn == true && this._signedIn != 'unresolved' && state.app.swings && state.app.swings.length == 0){
+    if (state.user.signedIn == true && state.swings.swings.length == 0){
+      this._getSwings();
+    }
     //}
     this._swings = state.swings.swings;
     this._page = state.app.page;
@@ -316,6 +348,12 @@ if (state.user.signedIn == true && state.swings.swings.length == 0){
     this._drawerOpened = state.app.drawerOpened;
     this._signedIn = state.user.signedIn;
     this._photoURL = state.user.photoURL;
+    if (this._signedIn === false){
+      this._block = false;
+    }
+    if (this._signedIn === true && typeof state.user.email == 'string'){
+      this._block = false;
+    }
   }
 
   _signOut(){

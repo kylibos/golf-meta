@@ -31,6 +31,7 @@
     "@polymer/paper-listbox": "github:PolymerElements/paper-listbox",
     "@polymer/paper-progress": "github:PolymerElements/paper-progress",
     "@polymer/paper-slider": "github:PolymerElements/paper-slider",
+    "@polymer/paper-spinner": "github:PolymerElements/paper-spinner",
     "@polymer/polymer": "^3.1.0",
     "@webcomponents/webcomponentsjs": "^2.2.4",
     "firebase": "^5.9.3",
