@@ -15,6 +15,7 @@ import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
+import CryptoES from 'crypto-es';
 
 import './gm-login.js';
 import './gm-blocker.js';
@@ -254,13 +255,18 @@ class MyApp extends connect(store)(LitElement) {
 
     firebase.auth().onAuthStateChanged((user) => {
       if (user){
+        var wordArray = CryptoES.SHA1(user.providerData[0].email);
+        var userHash = wordArray.toString(CryptoES.enc.Base64)
+        console.log(userHash);
         firebase.firestore().collection('userMethods').doc(user.uid).set({
+          uid: user.uid,
           displayName: user.providerData[0].displayName,
           email: user.providerData[0].email,
           photoURL: user.providerData[0].photoURL,
           providerId: user.providerData[0].providerId,
           phoneNumber: user.providerData[0].phoneNumber,
-          uid: user.providerData[0].uid
+          providerUid: user.providerData[0].uid,
+          userHash: userHash
         }, {merge: true});
 
         store.dispatch(signInUser(user.providerData[0]));
