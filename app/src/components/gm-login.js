@@ -40,6 +40,8 @@ class GmLogin extends LitElement {
           color:white;
           font-size:30px;
           padding-bottom:10px;
+          
+          text-shadow: 3px 3px var(--app-dark-color);
         }
 
         #signInButtonContainer {
