@@ -256,8 +256,8 @@ class MyApp extends connect(store)(LitElement) {
     firebase.auth().onAuthStateChanged((user) => {
       if (user){
         var wordArray = CryptoES.SHA1(user.providerData[0].email);
-        var userHash = wordArray.toString(CryptoES.enc.Base64)
-        console.log(userHash);
+        user.providerData[0].userHash = wordArray.toString(CryptoES.enc.Base64);
+        //console.log('user hash',userHash);
         firebase.firestore().collection('userMethods').doc(user.uid).set({
           uid: user.uid,
           displayName: user.providerData[0].displayName,
@@ -266,7 +266,7 @@ class MyApp extends connect(store)(LitElement) {
           providerId: user.providerData[0].providerId,
           phoneNumber: user.providerData[0].phoneNumber,
           providerUid: user.providerData[0].uid,
-          userHash: userHash
+          userHash: user.providerData[0].userHash
         }, {merge: true});
 
         store.dispatch(signInUser(user.providerData[0]));

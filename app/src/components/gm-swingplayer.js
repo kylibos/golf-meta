@@ -205,7 +205,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
         <div>
           <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
         </div>
-        <div style="flex:1; flex-direction:row;display:flex; align-items:center; justify-content:right;">
+        <div style="flex:1; flex-direction:row;display:flex; align-items:center; justify-content:flex-end;">
           <div id="pullOutIcon" @click="${this._showPositionButtons}" class="${this._showPositions ? 'hide' : 'show'}">${pullOutIcon}</div>
           <div id="pushInIcon" @click="${this._hidePositionButtons}" class="${this._showPositions ? 'show' : 'hide'}">${pushInIcon}</div>
           <div id="positionContainer" class="${this._showPositions ? 'showPositions' : 'hidePositions'}">

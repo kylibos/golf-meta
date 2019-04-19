@@ -266,7 +266,7 @@ class GmUploader extends connect(store)(LitElement) {
     }
 
     firebase.firestore().collection("swings").add({
-      userId: this._userId,
+      userHash: this._userHash,
       size: this._videoFile.size,
       type: this._videoFile.type,
       name: this._videoFile.name,
@@ -359,7 +359,7 @@ class GmUploader extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-    this._userId = state.user.id;
+    this._userHash = state.user.userHash;
   }
 }
 

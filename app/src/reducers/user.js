@@ -19,7 +19,8 @@ const user = (state = INITIAL_STATE, action) => {
         email: user.email,
         signedIn: true,
         username: (typeof user.username == 'undefined' ? '' : user.username),
-        photoURL: (typeof user.photoURL == 'string' ? user.photoURL : '')
+        photoURL: (typeof user.photoURL == 'string' ? user.photoURL : ''),
+        userHash: user.userHash
       };
     case SIGN_OUT_USER:
       return {
