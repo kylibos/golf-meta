@@ -206,7 +206,7 @@ class MyApp extends connect(store)(LitElement) {
           <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
           <div main-title>Golf Meta</div>
           <div @click="${this._signOut}" style="display:flex; align-items: center; cursor:pointer;">
-            x<img style="border-radius:50%; height:40px;" src="${this._photoURL}" />
+            <img style="border-radius:50%; height:40px;" src="${this._photoURL}" />
           </div>
         </app-toolbar>
 
@@ -353,8 +353,12 @@ class MyApp extends connect(store)(LitElement) {
     this._snackbarOpened = state.app.snackbarOpened;
     this._drawerOpened = state.app.drawerOpened;
     this._signedIn = state.user.signedIn;
-    this._photoURL = state.user.photoURL;
-    console.log(state.user);
+    if (state.user.photoURL) {
+      this._photoURL = state.user.photoURL;
+    } else {
+      this._photoURL = 'images/default.png';
+    }
+
     if (this._signedIn === false){
       this._block = false;
     }
