@@ -198,7 +198,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   render() {
     return html`
       <div id="playerContainer">
-          <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" preload="auto" muted></video>
+          <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" preload="auto" playsinline muted></video>
         
       </div>
       <div id="playerControlsContainer">
@@ -303,7 +303,6 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     }; 
 
     v.ontimeupdate = () => {
-      console.log(v.currentTime);
       this._videoCurrentTime = parseFloat( v.currentTime.toFixed(1) );
     };
 
