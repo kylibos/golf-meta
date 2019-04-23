@@ -43,6 +43,13 @@ class GmHome extends connect(store)(PageViewElement) {
           right: 40px;
         }
 
+        #videosContainer {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: space-around;
+        }
+
         #uploadDialog {
           margin:0;
           padding:0;
@@ -61,7 +68,7 @@ class GmHome extends connect(store)(PageViewElement) {
       <div id="videosContainer">
         ${this._swings.map((item) => html`
           <a href="/swingplayer?id=${item.key}" style="text-decoration:none;">
-            <img src="${item.thumb}" style="display:block;margin:0;padding:0; border-radius:8px;" />
+            <img src="${item.thumb}" style="display:block;margin:0;padding-top:5px; border-radius:8px;" />
           </a>`)}
       </div>
 
