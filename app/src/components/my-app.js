@@ -183,10 +183,6 @@ class MyApp extends connect(store)(LitElement) {
         @media (min-width: 460px) {
 
 
-          .main-content {
-            padding-top: 107px;
-          }
-
           /* The drawer button isn't shown in the wide layout, so we don't
           need to offset the title */
           [main-title] {
@@ -232,10 +228,6 @@ class MyApp extends connect(store)(LitElement) {
         <my-view3 class="page" ?active="${this._page === 'view3'}"></my-view3>
         <my-view404 class="page" ?active="${this._page === 'view404'}"></my-view404>
       </main>
-
-      <footer>
-        <p>Made with &hearts; by the Polymer team.</p>
-      </footer>
 
       <gm-login class="${this._signedIn ? 'hide' : 'show'}"></gm-login>
       <gm-blocker class="${this._block ? 'show' : 'hide'}"></gm-blocker>

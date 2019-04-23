@@ -56,6 +56,15 @@ class GmHome extends connect(store)(PageViewElement) {
 
   render() {
     return html`
+
+
+      <div id="videosContainer">
+        ${this._swings.map((item) => html`
+          <a href="/swingplayer?id=${item.key}" style="text-decoration:none;">
+            <img src="${item.thumb}" style="display:block;margin:0;padding:0; border-radius:8px;" />
+          </a>`)}
+      </div>
+
       <iron-iconset-svg name="inline" size="24">
         <svg fill="#7ecb20" height="24" viewBox="0 0 24 24" width="24">
           <defs>
@@ -65,13 +74,6 @@ class GmHome extends connect(store)(PageViewElement) {
           </defs>
         </svg>
       </iron-iconset-svg>
-
-      <div id="videosContainer">
-        ${this._swings.map((item) => html`
-          <a href="/swingplayer?id=${item.key}">
-            <img src="${item.thumb}" />
-          </a><br />`)}
-      </div>
 
       <paper-fab id="addVideoButton" icon="inline:plus" @click="${this._addVideoButtonClicked}"></paper-fab>
 
