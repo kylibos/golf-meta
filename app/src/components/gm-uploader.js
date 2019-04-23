@@ -152,10 +152,11 @@ class GmUploader extends connect(store)(LitElement) {
         <div style="padding:16px;">
           <div id="thumbnailContainer" class="${this._gotVideo ? 'show' : 'hide'}">
             <div id="cancelVideoButton" @click="${this._clearVideo}">X</div>
-            <video width="150" height="150">
+            <video id="video" width="150" height="150">
               <source id="videoFile">
               Your browser does not support HTML5 video.
             </video>
+            <canvas id="thumbnailCanvas" style="background:#000; display:none;"></canvas>
           </div>
           <div class="${this._gotVideo ? 'hide' : 'show'}">
             <label for="videoFileInput" id="chooseButton">Choose a file ...</label>
@@ -230,11 +231,27 @@ class GmUploader extends connect(store)(LitElement) {
     `;
   }
 
+  _calcWidth(h,w){
+    if (h>w){
+      return (w/h)*300;
+    } else if (h<w){
+      return 300;
+    } else {
+      return 300;
+    }
+  }
+
+  _calcHeight(h,w){
+    if (h>w){
+      return 300; 
+    } else if (h<w){
+      return (w/h)*300;
+    } else {
+      return 300;
+    }
+  }
+
   _uploadVideo(){
-    // Create a firestore listener to determine when the file is uploaded
-    // Make a firestore record
-    // Upload the video to firebase storage
-    // Create a thumbnail for the video with ffmpeg
 
     this._uploadError = '';
     var club = this.shadowRoot.getElementById('clubSelector').value;
@@ -265,12 +282,26 @@ class GmUploader extends connect(store)(LitElement) {
       return false;
     }
 
+    // Create thumbnail
+    var video = this.shadowRoot.getElementById('video');
+    console.log(this.shadowRoot.getElementById('video').videoWidth);
+    var w = this._calcWidth(video.videoHeight, video.videoWidth);
+    var h = this._calcHeight(video.videoHeight, video.videoWidth);
+    var canvas = this.shadowRoot.getElementById('thumbnailCanvas');
+  
+    canvas.width = w;
+    canvas.height = h;
+
+    var context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, w, h);
+
     firebase.firestore().collection("swings").add({
       userHash: this._userHash,
       size: this._videoFile.size,
       type: this._videoFile.type,
       name: this._videoFile.name,
       state: 'uploading',
+      created: firebase.firestore.FieldValue.serverTimestamp(),
       club: this.shadowRoot.getElementById('clubSelector').value,
       handicap: this.shadowRoot.getElementById('handicapSelector').value,
     })
@@ -278,9 +309,12 @@ class GmUploader extends connect(store)(LitElement) {
       
       console.log("Document successfully written!");
 
+      // Upload the video
+
+
       var ref = firebase.storage().ref();
       var storageRef = ref.child('swings/'+this._generateFileName(docRef.id));
-      var file = this._videoFile; // use the Blob or File API
+      var file = this._videoFile;
 
       var uploadTask = storageRef.put(file);
 
@@ -289,20 +323,18 @@ class GmUploader extends connect(store)(LitElement) {
         this._uploadProgress = Math.round(percent);
         if (this._uploadProgress == 100) {
           this._uploadComplete();
-          console.log(storageRef.getDownloadURL());
+          //console.log(storageRef.getDownloadURL());
         }
       }, (error)=>{
         console.log(error);
       }, ()=>{
-        console.log('donwload URL:',storageRef.getDownloadURL());
+        //console.log('donwload URL:',storageRef.getDownloadURL());
         storageRef.getDownloadURL().then((url) => {
-          console.log('DURL',url);
           firebase.firestore().collection("swings").doc(docRef.id).set({
             url: url
           }, { merge: true })
-          .then(function() {
-              console.log("Document successfully written!");
-              // Generate the thumbnail
+          .then(() => {
+            this._uploadThumbnail(docRef.id);
             return Promise.resolve();
           })
           .catch(function(error) {
@@ -311,6 +343,9 @@ class GmUploader extends connect(store)(LitElement) {
           });
         });
       });
+      
+
+      // Upload the Thumbnail
 
       this.swingListenerUnsubscribe = firebase.firestore().collection('swings').doc(docRef.id).onSnapshot((doc) => {
         if (doc.data().state == 'deployed'){
@@ -326,11 +361,49 @@ class GmUploader extends connect(store)(LitElement) {
     console.log(this.shadowRoot.getElementById('clubSelector').value);
   }
 
+  _uploadThumbnail(id){
+    console.log('upload thumbnail');
+
+    var canvas = this.shadowRoot.getElementById('thumbnailCanvas');
+    console.log('image',canvas.toDataURL("image/jpeg"));
+
+    var ref = firebase.storage().ref();
+    var storageRef = ref.child('thumbs/'+this._generateThumbFileName(id));
+    var uploadTask = storageRef.putString(canvas.toDataURL(), 'data_url');
+
+    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
+      var percent = snapshot.bytesTransferred / snapshot.totalBytes * 100;
+      this._uploadProgress = Math.round(percent);
+      if (this._uploadProgress == 100) {
+        //this._uploadComplete();
+        //console.log(storageRef.getDownloadURL());
+        console.log('THIMB UPLOADED!');
+      }
+    }, (error)=>{
+      console.log(error);
+    }, ()=>{
+      storageRef.getDownloadURL().then((url) => {
+        firebase.firestore().collection("swings").doc(id).set({
+          thumb: url
+        }, { merge: true })
+        .then(() => {
+          console.log('thumbnail has been uploaded');
+          return Promise.resolve();
+        })
+        .catch(function(error) {
+            console.error("Error writing document: ", error);
+          return Promise.resolve();
+        });
+      });
+    });
+  }
+
   _uploadComplete(){
     this._uploadProgress = 0;
     this.shadowRoot.getElementById('clubSelector').value = '';
     this.shadowRoot.getElementById('handicapSelector').value = '';
     this._clearVideo();
+    this._cancel();
   }
 
   _clearVideo(){
@@ -348,6 +421,12 @@ class GmUploader extends connect(store)(LitElement) {
     this.shadowRoot.getElementById('videoFile').parentElement.load();
     this._gotVideo = true;
     this._uploadProgress = 0;
+
+    // send an event to center the dialog
+  }
+
+  _generateThumbFileName(id){
+    return 'swing_' + id + '.jpg';
   }
 
   _generateFileName(id){

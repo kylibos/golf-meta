@@ -198,7 +198,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   render() {
     return html`
       <div id="playerContainer">
-          <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" preload="auto" playsinline muted></video>
+          <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" playsinline muted></video>
         
       </div>
       <div id="playerControlsContainer">

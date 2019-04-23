@@ -327,8 +327,22 @@ class MyApp extends connect(store)(LitElement) {
 
   _getSwings(){
     var swings = [];
-    firebase.firestore().collection('swings').get()
-    .then(function(querySnapshot) {
+
+    firebase.firestore().collection('swings').where("state", "==", "deployed").orderBy("created", "desc")
+    .onSnapshot(function(querySnapshot) {
+      swings = [];
+      querySnapshot.forEach((doc) => {
+        //console.log(doc.data());
+          var i = swings.push(doc.data());
+          swings[i-1].key = doc.id;
+      });
+
+      store.dispatch(updateSwings(swings));
+    });
+
+    /*
+    firebase.firestore().collection('swings').where("state", "==", "deployed").orderBy("created").get()
+    .then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
             var i = swings.push(doc.data());
             swings[i-1].key = doc.id;
@@ -336,8 +350,9 @@ class MyApp extends connect(store)(LitElement) {
       store.dispatch(updateSwings(swings));
     })
     .catch(function(error) {
-        //console.log("Error getting documents: ", error);
+        console.log("Error getting documents: ", error);
     });
+    */
   }
 
   stateChanged(state) {
@@ -347,6 +362,7 @@ class MyApp extends connect(store)(LitElement) {
       this._getSwings();
     }
     //}
+    
     this._swings = state.swings.swings;
     this._page = state.app.page;
     this._offline = state.app.offline;
