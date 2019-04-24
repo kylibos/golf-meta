@@ -31,7 +31,9 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       _initialVideoWidth: {type: Number},
       _videoHeight: {type: Number},
       _videoWidth: {type: Number},
-      _isLoading: {type: Boolean}
+      _isLoading: {type: Boolean},
+      _isMouseDown: {type: Boolean},
+      _mouse: {type: Object}
     };
   }
 
@@ -65,7 +67,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           position:fixed;
           width:100%;
           height:100%;
-          background:black;
+          background:var(--app-color);
           top:0px;
           right:0px;
           left:0px;
@@ -109,14 +111,18 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           width:40px;
           margin:16px;
           cursor:pointer;
+          display:inline-block;
+          position:fixed;
+          top:0;
+          left:0;
         }
 
         .icon {
           background:rgba(0,0,0,.4);
           color:black;
           border-radius:50%;
-          height:60px;
-          width:60px;
+          height:50px;
+          width:50px;
           margin-bottom:6px;
           cursor:pointer;
         }
@@ -126,17 +132,9 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           background:rgba(0,0,0,.4);
           color:black;
           border-radius:50%;
-          height:80px;
-          width:80px;
+          height:70px;
+          width:70px;
           cursor:pointer;
-        }
-
-        #positionContainer {
-          background:rgba(0,0,0,.4);
-          display:flex;
-          flex-direction:row;
-          border:1px solid var(--app-color);
-          border-right:none;
         }
 
         .pButton {
@@ -169,7 +167,6 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
         }
 
         #canvasContainer {
-          background:rgba(0,0,0,.5);
           position:fixed;
           width:100%;
           height:100%;
@@ -177,6 +174,9 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           right:0px;
           left:0px;
           bottom:0px;
+        }
+
+        #canvas {
         }
 
         #pullOutIcon {
@@ -203,6 +203,8 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     this._windowWidth = 0;
     this._videoHeight = '0px';
     this._videoWidth = '0px';
+    this._mouse = {};
+    this._isMouseDown = false;
     window.addEventListener('resize', () => {
       this._windowHeight = window.innerHeight;
       this._windowWidth = window.innerWidth;
@@ -221,6 +223,11 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       this._videoWidth = this._windowWidth+'px';
       this._videoHeight = (this._videoWidth*(1/videoAspectRatio))+'px';
     }
+
+    // Resize the canvas
+    let c = this.shadowRoot.getElementById("canvas");
+    c.width = this._windowWidth;
+    c.height = this._windowHeight;
   }
 
   render() {
@@ -231,35 +238,34 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       <div id="playerContainer" class="${this._isLoading ? 'hide' : 'show'}">
           <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" playsinline muted preload></video>
       </div>
-      <div id="canvasContainer">
+      <div id="canvasContainer" class="${this._isLoading ? 'hide' : 'show'}">
+        <canvas id="canvas" @click="${this._clickedCanvas}"></canvas>
+        <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
 
-      </div>
-      <div id="playerControlsContainer" class="${this._isLoading ? 'hide' : 'show'}">
-        <div>
-          <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
-        </div>
-
-        <div style="display:flex; flex-direction:row;">
-          <div style="flex:1;display:flex;align-items:flex-end;padding:16px;">
+        <div style="bottom:0;right:0;left:0;position:fixed;padding:16px 8px;align-items: center; display: flex;flex-direction: row;">
+          
+          <div style="flex:1;display:flex;align-items:flex-end;padding:16px 0px;">
             <paper-slider id="slider" min="0" max="${this._videoDuration}" pin="true" step=".1" value="${this._videoCurrentTime}" style="width:100%;"></paper-slider>
           </div>
-          <div style="padding:16px;align-items: center; display: flex;flex-direction: column;">
-            <div @click="${this._skipForward}" class="icon">
-              ${skipForwardIcon}
-            </div>
-            <div @click="${this._play}" class="${this._isPaused ? 'show' : 'hide'} bigIcon">
-              ${playIcon}
-            </div>
-            <div @click="${this._pause}" class="${this._isPaused ? 'hide' : 'show'} bigIcon">
-              ${pauseIcon}
-            </div>
-            <div @click="${this._skipBackward}" class="icon">
-              ${skipBackwardIcon}
-            </div>
+          <div @click="${this._skipBackward}" class="icon">
+            ${skipBackwardIcon}
+          </div>
+          <div @click="${this._play}" class="${this._isPaused ? 'show' : 'hide'} bigIcon">
+            ${playIcon}
+          </div>
+          <div @click="${this._pause}" class="${this._isPaused ? 'hide' : 'show'} bigIcon">
+            ${pauseIcon}
+          </div>
+          <div @click="${this._skipForward}" class="icon">
+            ${skipForwardIcon}
           </div>
         </div>
       </div>
     `;
+  }
+
+  _clickedCanvas(e){
+    console.log(e);
   }
 
   firstUpdated(){
@@ -282,6 +288,52 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       // remove the spinner
       this._isLoading = false;
     });
+
+    let c = this.shadowRoot.getElementById("canvas");
+    c.addEventListener("mousedown", (e) => {
+      this._mouseDown = e;
+      this._isMouseDown = true;
+      this._lineStart = {x: e.clientX, y:e.clientY};
+      //console.log('line start', this._lineStart);
+    });
+    
+    c.addEventListener("mouseup", (e) => {
+      this._isMouseDown = false;
+      // erase?
+      if (e.clientX == this._lineStart.x && e.clientY == this._lineStart.y){
+        this._clearCanvas();
+      }
+    });
+    
+    c.addEventListener("mousemove", (e) => {
+      if (this._isMouseDown){
+        //console.log('mousemove', e);
+        this._lineEnd = {x:e.clientX, y:e.clientY};
+        this._drawLine();
+      }
+    });  
+  }
+
+  _clearCanvas(){
+    let c = this.shadowRoot.getElementById("canvas");
+            console.log('clear it');
+        const ctx = c.getContext('2d');
+
+        ctx.clearRect(0, 0, c.width, c.height);
+  }
+
+  _drawLine(){
+    console.log('DRAW LINE');
+    let c = this.shadowRoot.getElementById("canvas");
+    var ctx = c.getContext("2d");
+    ctx.beginPath();
+    console.log(this._lineStart.x, this._lineEnd.x);
+    ctx.strokeStyle = "#b2ff59";
+    ctx.lineWidth = 6;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.moveTo(this._lineStart.x, this._lineStart.y);
+    ctx.lineTo(this._lineEnd.x, this._lineEnd.y);
+    ctx.stroke();
   }
 
   _showPositionButtons(){
