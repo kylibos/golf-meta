@@ -11,6 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
+import { star, emptyStar } from './my-icons.js';
 
 // This element is connected to the Redux store.
 import { store } from '../store.js';
@@ -48,11 +49,24 @@ class GmHome extends connect(store)(PageViewElement) {
           flex-direction: row;
           flex-wrap: wrap;
           justify-content: space-around;
+          padding:10px;
         }
 
         #uploadDialog {
           margin:0;
           padding:0;
+        }
+
+        .swingCard {
+          border:1px solid gainsboro;
+          padding:10px;
+          width:100%;
+          margin-bottom:10px;
+        }
+
+        .cardImage {
+          width:100%;
+          height:300px;
         }
 
         paper-fab {
@@ -67,9 +81,15 @@ class GmHome extends connect(store)(PageViewElement) {
 
       <div id="videosContainer">
         ${this._swings.map((item) => html`
-          <a href="/swingplayer?id=${item.key}" style="text-decoration:none;">
+          <div class="swingCard">
+            <div class="cardImage" style="background-size:cover; background-position:center;background-image:url(${item.thumb});"></div>
+            <div class="cardOptions">
+              <div style="height:35px;">${emptyStar}</div>
+            </div>
+          </div>
+          <!--<a href="/swingplayer?id=${item.key}" style="text-decoration:none;">
             <img src="${item.thumb}" style="display:block;margin:0;padding-top:5px; border-radius:8px;" />
-          </a>`)}
+          </a>-->`)}
       </div>
 
       <iron-iconset-svg name="inline" size="24">
