@@ -82,14 +82,13 @@ class GmHome extends connect(store)(PageViewElement) {
       <div id="videosContainer">
         ${this._swings.map((item) => html`
           <div class="swingCard">
-            <div class="cardImage" style="background-size:cover; background-position:center;background-image:url(${item.thumb});"></div>
+            <a href="/swingplayer?id=${item.key}" style="text-decoration:none;">
+              <div class="cardImage" style="background-size:cover; background-position:center;background-image:url(${item.thumb});"></div>
+            </a>
             <div class="cardOptions">
               <div style="height:35px;">${emptyStar}</div>
             </div>
-          </div>
-          <!--<a href="/swingplayer?id=${item.key}" style="text-decoration:none;">
-            <img src="${item.thumb}" style="display:block;margin:0;padding-top:5px; border-radius:8px;" />
-          </a>-->`)}
+          </div>`)}
       </div>
 
       <iron-iconset-svg name="inline" size="24">

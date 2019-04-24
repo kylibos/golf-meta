@@ -3,6 +3,7 @@ import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { playIcon, pauseIcon, skipForwardIcon, skipBackwardIcon, backIcon, pullOutIcon, pushInIcon } from './my-icons.js';
 import '@polymer/paper-slider/paper-slider.js';
+import '@polymer/paper-spinner/paper-spinner.js';
 
 // This element is connected to the Redux store.
 import { store } from '../store.js';
@@ -29,7 +30,8 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       _initialVideoHeight: {type: Number},
       _initialVideoWidth: {type: Number},
       _videoHeight: {type: Number},
-      _videoWidth: {type: Number}
+      _videoWidth: {type: Number},
+      _isLoading: {type: Boolean}
     };
   }
 
@@ -57,6 +59,20 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           top:0px;
           right:0px;
           text-align:center;
+        }
+
+        #spinnerContainer {
+          position:fixed;
+          width:100%;
+          height:100%;
+          background:black;
+          top:0px;
+          right:0px;
+          left:0px;
+          bottom:0px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
         }
 
        .showPositions {
@@ -168,6 +184,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   constructor(){
     super();
     this._isPaused = true;
+    this._isLoading = true;
     this._videoDuration = 0;
     this._videoCurrentTime = 0;
     this._showPositions = false;
@@ -197,11 +214,13 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      <div id="playerContainer">
-          <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" playsinline muted></video>
-        
+      <div id="spinnerContainer">
+        <paper-spinner active></paper-spinner>
       </div>
-      <div id="playerControlsContainer">
+      <div id="playerContainer" class="${this._isLoading ? 'hide' : 'show'}">
+          <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" playsinline muted preload></video>
+      </div>
+      <div id="playerControlsContainer" class="${this._isLoading ? 'hide' : 'show'}">
         <div>
           <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
         </div>
@@ -249,7 +268,25 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   }
 
   firstUpdated(){
+    let v = this.shadowRoot.getElementById("video");
 
+    v.addEventListener('play', (e) => {
+      //console.log('play', e);
+    });    
+
+    v.addEventListener('waiting', (e) => {
+      //console.log('waiting', e);
+    });
+
+    v.addEventListener('loadedmetadata', (e) => {
+      //console.log('loadedmetadata', e);
+    });
+
+    v.addEventListener('canplaythrough', (e) => {
+      //console.log('canplaythrough', e);
+      // remove the spinner
+      this._isLoading = false;
+    });
   }
 
   _showPositionButtons(){
@@ -288,6 +325,10 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   }
 
   updated(changedProps){
+    if (changedProps.has("_videoId")){
+      this._isLoading = true;
+    }
+
     var parsedUrl = new URL(window.location.href);
     this._videoId = parsedUrl.searchParams.get("id");
     if (this._swings.length > 0){
@@ -297,10 +338,6 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     }
 
     let v = this.shadowRoot.getElementById("video");
-
-    v.onprogress = function(e) {
-      //console.log(e.total, e.loaded);
-    }; 
 
     v.ontimeupdate = () => {
       this._videoCurrentTime = parseFloat( v.currentTime.toFixed(1) );
@@ -315,11 +352,13 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       slider.addEventListener('change', (e) => {
         v.currentTime = slider.value;
       });
+
       this._initialVideoHeight = v.videoHeight;
       this._initialVideoWidth = v.videoWidth;
       this._windowHeight = window.innerHeight;
       this._windowWidth = window.innerWidth;
       this._fitVideo();
+
     }; 
   }
 
