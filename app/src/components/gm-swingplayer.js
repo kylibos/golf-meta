@@ -168,6 +168,17 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           cursor:pointer;
         }
 
+        #canvasContainer {
+          background:rgba(0,0,0,.5);
+          position:fixed;
+          width:100%;
+          height:100%;
+          top:0px;
+          right:0px;
+          left:0px;
+          bottom:0px;
+        }
+
         #pullOutIcon {
           background:rgba(0,0,0,.4);
           height:40px;
@@ -220,30 +231,14 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       <div id="playerContainer" class="${this._isLoading ? 'hide' : 'show'}">
           <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" playsinline muted preload></video>
       </div>
+      <div id="canvasContainer">
+
+      </div>
       <div id="playerControlsContainer" class="${this._isLoading ? 'hide' : 'show'}">
         <div>
           <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
         </div>
-        <div style="flex:1; flex-direction:row;display:flex; align-items:center; justify-content:flex-end;">
-          <div id="pullOutIcon" @click="${this._showPositionButtons}" class="${this._showPositions ? 'hide' : 'show'}">${pullOutIcon}</div>
-          <div id="pushInIcon" @click="${this._hidePositionButtons}" class="${this._showPositions ? 'show' : 'hide'}">${pushInIcon}</div>
-          <div id="positionContainer" class="${this._showPositions ? 'showPositions' : 'hidePositions'}">
-            <div>
-            <div class="pButton">P1</div>
-            <div class="pButton">P3</div>
-            <div class="pButton">P5</div>
-            <div class="pButton">P7</div>
-            <div class="pButton">P9</div>
-            </div>
-            <div>
-            <div class="pButton">P2</div>
-            <div class="pButton">P4</div>
-            <div class="pButton">P6</div>
-            <div class="pButton">P8</div>
-            <div class="pButton">P10</div>
-            </div>
-          </div>
-        </div>
+
         <div style="display:flex; flex-direction:row;">
           <div style="flex:1;display:flex;align-items:flex-end;padding:16px;">
             <paper-slider id="slider" min="0" max="${this._videoDuration}" pin="true" step=".1" value="${this._videoCurrentTime}" style="width:100%;"></paper-slider>
