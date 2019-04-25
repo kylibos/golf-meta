@@ -29,7 +29,8 @@ class GmHome extends connect(store)(PageViewElement) {
 
   static get properties() {
     return {
-      _swings: {type: Array}
+      _swings: {type: Array},
+      _vs: {type: Array}
     };
   }
 
@@ -71,12 +72,20 @@ class GmHome extends connect(store)(PageViewElement) {
 
         .cardOptions {
           padding-top:10px;
+          display:flex;
+          flex-direction:row;
         }
 
         paper-fab {
           --paper-fab-background: var(--app-color);
         }`
     ];
+  }
+
+  constructor(){
+    super();
+
+    this._vs = [];
   }
 
   render() {
@@ -91,6 +100,7 @@ class GmHome extends connect(store)(PageViewElement) {
             </a>
             <div class="cardOptions">
               <div style="height:35px;">${emptyStar}</div>
+              <div style="cursor:pointer; text-align:right; font-weight:800;" id="card_${item.key}" @click="${this._selectVs}">VS</div>
             </div>
           </div>`)}
       </div>
@@ -113,6 +123,22 @@ class GmHome extends connect(store)(PageViewElement) {
     `;
   }
 
+  _selectVs(e){
+    if (this._vs.length == 0){
+      this._vs[0] = e.srcElement.id;
+    } else if (this._vs.length == 1){
+      if (e.srcElement.id == this._vs[0]){
+        this._vs = [];
+        return;
+      } else {
+        const newLocation = '/vs?one='+this._vs[0].split('_')[1]+'&two='+e.srcElement.id.split('_')[1];
+        this._vs = [];
+        window.history.pushState({}, '', newLocation);
+        this.dispatchEvent(new CustomEvent('goTo', {detail: newLocation, bubbles: true, composed: true}));
+      }
+    }
+  }
+
   firstUpdated() {
     console.log('create listener');
     this.addEventListener('closeUploadDialog', (e) => this._closeDialog());
@@ -127,7 +153,6 @@ class GmHome extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    console.log(state.swings.swings);
     this._swings = state.swings.swings;
   }
 }

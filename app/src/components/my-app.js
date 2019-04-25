@@ -223,6 +223,7 @@ class MyApp extends connect(store)(LitElement) {
       <!-- Main content -->
       <main role="main" class="main-content">
         <gm-swingplayer class="page" ?active="${this._page === 'swingplayer'}"></gm-swingplayer>
+        <gm-vs class="page" ?active="${this._page === 'vs'}"></gm-vs>
         <gm-home class="page" ?active="${this._page === 'home'}"></gm-home>
         <my-view2 class="page" ?active="${this._page === 'view2'}"></my-view2>
         <my-view3 class="page" ?active="${this._page === 'view3'}"></my-view3>
@@ -292,6 +293,7 @@ class MyApp extends connect(store)(LitElement) {
   }
 
   firstUpdated() {
+    this.addEventListener('goTo', (e) => this._goTo(e));
     installRouter((location) => store.dispatch(navigate(decodeURIComponent(location.pathname))));
     installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
     installMediaQueryWatcher(`(min-width: 460px)`,
@@ -309,6 +311,10 @@ class MyApp extends connect(store)(LitElement) {
     }
   }
 
+  _goTo(e){
+    store.dispatch(navigate(decodeURIComponent(e.detail)));
+  }
+
   _menuButtonClicked() {
     store.dispatch(updateDrawerState(true));
   }
@@ -319,7 +325,7 @@ class MyApp extends connect(store)(LitElement) {
 
   _getSwings(){
     var swings = [];
-
+console.log('GET SWINGS');
     firebase.firestore().collection('swings').where("state", "==", "deployed").orderBy("created", "desc")
     .onSnapshot(function(querySnapshot) {
       swings = [];
