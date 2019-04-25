@@ -85,6 +85,10 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           display: none !important;
         }
 
+        .showFlex {
+          display: flex !important;
+        }
+
         .show {
           display: block !important;
         }
@@ -235,7 +239,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       <div id="spinnerContainer">
         <paper-spinner active></paper-spinner>
       </div>
-      <div id="playerContainer" class="${this._isLoading ? 'hide' : 'show'}">
+      <div id="playerContainer" class="${this._isLoading ? 'hide' : 'showFlex'}">
           <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" playsinline muted preload></video>
       </div>
       <div id="canvasContainer" class="${this._isLoading ? 'hide' : 'show'}">
