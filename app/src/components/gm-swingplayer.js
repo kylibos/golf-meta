@@ -307,16 +307,23 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     
     c.addEventListener("mousemove", (e) => {
       if (this._isMouseDown){
-        //console.log('mousemove', e);
         this._lineEnd = {x:e.clientX, y:e.clientY};
         this._drawLine();
       }
     });  
 
     c.addEventListener("touchstart", (e) =>{
-      console.log('Touch Start!!!!');
-      alert('Touched!!!');
+      this._isMouseDown = true;
+      this._lineStart = {x: e.touches[0].clientX, y:e.touches[0].clientY};
     });
+
+    c.addEventListener("touchmove", (e) =>{
+      if (this._isMouseDown){
+        this._lineEnd = {x:e.touches[0].clientX, y:e.touches[0].clientY};
+        this._drawLine();
+      }
+    });
+
   }
 
   _clearCanvas(){
