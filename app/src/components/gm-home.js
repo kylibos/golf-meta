@@ -60,13 +60,17 @@ class GmHome extends connect(store)(PageViewElement) {
         .swingCard {
           border:1px solid gainsboro;
           padding:10px;
-          width:100%;
+          width:calc(50% - 30px);
           margin-bottom:10px;
         }
 
         .cardImage {
           width:100%;
-          height:300px;
+          height:200px;
+        }
+
+        .cardOptions {
+          padding-top:10px;
         }
 
         paper-fab {
