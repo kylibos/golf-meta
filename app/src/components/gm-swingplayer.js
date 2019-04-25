@@ -384,9 +384,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   }
 
   updated(changedProps){
-    if (changedProps.has("_videoId")){
-      this._isLoading = true;
-    }
+
 
     var parsedUrl = new URL(window.location.href);
     this._videoId = parsedUrl.searchParams.get("id");
@@ -394,6 +392,11 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       this._videoURL = this._swings.find(obj => {
         return obj.key === this._videoId;
       }).url;
+    }
+
+    if (changedProps.has("_videoId")){
+      this._isLoading = true;
+      this.shadowRoot.getElementById("video").load();
     }
 
     let v = this.shadowRoot.getElementById("video");
