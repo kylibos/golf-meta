@@ -312,6 +312,11 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
         this._drawLine();
       }
     });  
+
+    c.addEventListener("touchstart", (e) =>{
+      console.log('Touch Start!!!!');
+      alert('Touched!!!');
+    });
   }
 
   _clearCanvas(){
