@@ -51,6 +51,7 @@ class GmHome extends connect(store)(PageViewElement) {
           flex-wrap: wrap;
           justify-content: space-around;
           padding:10px;
+          background:whitesmoke;
         }
 
         #uploadDialog {
@@ -63,6 +64,7 @@ class GmHome extends connect(store)(PageViewElement) {
           padding:10px;
           width:calc(50% - 30px);
           margin-bottom:10px;
+          background:white;
         }
 
         .cardImage {
@@ -74,6 +76,20 @@ class GmHome extends connect(store)(PageViewElement) {
           padding-top:10px;
           display:flex;
           flex-direction:row;
+        }
+
+        .green {
+          color:var(--app-color) !important;
+        }
+
+        .vs {
+          color:gainsboro;
+          font-size:24px;
+        }
+
+        .star {
+          text-align:left;
+          flex:1;
         }
 
         paper-fab {
@@ -99,8 +115,8 @@ class GmHome extends connect(store)(PageViewElement) {
               <div class="cardImage" style="background-size:cover; background-position:center;background-image:url(${item.thumb});"></div>
             </a>
             <div class="cardOptions">
-              <div style="height:35px;">${emptyStar}</div>
-              <div style="cursor:pointer; text-align:right; font-weight:800;" id="card_${item.key}" @click="${this._selectVs}">VS</div>
+              <div class="star" style="height:35px;">${emptyStar}</div>
+              <div class="vs" style="cursor:pointer; text-align:right; font-weight:800;" id="card_${item.key}" @click="${this._selectVs}">VS</div>
             </div>
           </div>`)}
       </div>
@@ -126,16 +142,28 @@ class GmHome extends connect(store)(PageViewElement) {
   _selectVs(e){
     if (this._vs.length == 0){
       this._vs[0] = e.srcElement.id;
+      this.shadowRoot.getElementById(e.srcElement.id).classList.add('green');
     } else if (this._vs.length == 1){
       if (e.srcElement.id == this._vs[0]){
+        this.shadowRoot.getElementById(e.srcElement.id).classList.remove('green');
         this._vs = [];
         return;
       } else {
+        this.shadowRoot.getElementById(e.srcElement.id).classList.add('green');
         const newLocation = '/vs?one='+this._vs[0].split('_')[1]+'&two='+e.srcElement.id.split('_')[1];
         this._vs = [];
         window.history.pushState({}, '', newLocation);
         this.dispatchEvent(new CustomEvent('goTo', {detail: newLocation, bubbles: true, composed: true}));
+        this._clearVs();
       }
+    }
+  }
+
+  _clearVs(){
+    var greens = this.shadowRoot.querySelectorAll(".green");
+
+    for (var i=0; i<greens.length; i++){
+      greens[i].classList.remove('green');
     }
   }
 

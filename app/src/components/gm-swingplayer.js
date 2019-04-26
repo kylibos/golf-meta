@@ -245,9 +245,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       <div id="canvasContainer" class="${this._isLoading ? 'hide' : 'show'}">
         <canvas id="canvas" @click="${this._clickedCanvas}"></canvas>
         <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
-
         <div style="bottom:0;right:0;left:0;position:fixed;padding:16px 8px;align-items: center; display: flex;flex-direction: row;">
-          
           <div style="flex:1;display:flex;align-items:flex-end;padding:16px 0px;">
             <paper-slider id="slider" min="0" max="${this._videoDuration}" pin="true" step=".1" value="${this._videoCurrentTime}" style="width:100%;"></paper-slider>
           </div>

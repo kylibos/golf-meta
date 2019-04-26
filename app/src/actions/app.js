@@ -27,7 +27,9 @@ export const navigate = (path) => (dispatch) => {
 };
 
 const loadPage = (page) => (dispatch) => {
-  switch(page) {
+  var p = page.split('?')[0];
+  console.log(p);
+  switch(p) {
     case 'home':
       import('../components/gm-home.js').then((module) => {
         // Put code in here that you want to run every time when
@@ -37,18 +39,20 @@ const loadPage = (page) => (dispatch) => {
     case 'swingplayer':
       import('../components/gm-swingplayer.js');
       break;
-    case 'view2':
-      import('../components/my-view2.js');
+    case 'vs':
+    console.log('VSVSVSV');
+      import('../components/gm-vs.js');
       break;
     case 'view3':
       import('../components/my-view3.js');
       break;
     default:
-      page = 'view404';
+    console.log('404040404');
+      p = 'view404';
       import('../components/my-view404.js');
   }
 
-  dispatch(updatePage(page));
+  dispatch(updatePage(p));
 };
 
 const updatePage = (page) => {
