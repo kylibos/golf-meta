@@ -33,8 +33,8 @@ class GmVs extends connect(store)(PageViewElement) {
     return [
       SharedStyles,
       css`
-        #playerContainer {
-          background:rgba(0,0,0,.5);
+        #vsContainer {
+          background:rgba(0,0,0,1);
           position:fixed;
           top:0;
           left:0;
@@ -46,8 +46,23 @@ class GmVs extends connect(store)(PageViewElement) {
           flex-direction:row;
         }
 
-        video {
+        #containerOne {
+          width:50%;height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        #containerTwo {
           width:50%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        video {
+          width:100%;
         }
       `
     ];
@@ -60,9 +75,23 @@ class GmVs extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      <div id="playerContainer">
-        <video id="video" src="${this._videoOneURL}" playsinline muted preload></video>
-        <video id="video" src="${this._videoTwoURL}" playsinline muted preload></video>
+      <div id="vsContainer">
+        <div id="containerOne">
+          <div id="spinnerOneContainer">
+            <paper-spinner active></paper-spinner>
+          </div>
+          <div id="playerOneContainer">
+            <video id="video" src="${this._videoOneURL}" playsinline muted preload></video>
+          </div>
+        </div>
+        <div id="containerOne">
+          <div id="spinnerOneContainer">
+            <paper-spinner active></paper-spinner>
+          </div>
+          <div id="playerOneContainer">
+            <video id="video" src="${this._videoTwoURL}" playsinline muted preload></video>
+          </div>
+        </div>
       </div>
     `;
   }
