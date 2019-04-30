@@ -325,7 +325,6 @@ class MyApp extends connect(store)(LitElement) {
 
   _getSwings(){
     var swings = [];
-console.log('GET SWINGS');
     firebase.firestore().collection('swings').where("state", "==", "deployed").orderBy("created", "desc")
     .onSnapshot(function(querySnapshot) {
       swings = [];

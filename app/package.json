@@ -30,6 +30,7 @@
     "@polymer/paper-item": "github:PolymerElements/paper-item",
     "@polymer/paper-listbox": "github:PolymerElements/paper-listbox",
     "@polymer/paper-progress": "github:PolymerElements/paper-progress",
+    "@polymer/paper-ripple": "github:PolymerElements/paper-ripple",
     "@polymer/paper-slider": "github:PolymerElements/paper-slider",
     "@polymer/paper-spinner": "github:PolymerElements/paper-spinner",
     "@polymer/polymer": "^3.1.0",

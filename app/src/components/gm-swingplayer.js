@@ -4,10 +4,13 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 import { playIcon, pauseIcon, skipForwardIcon, skipBackwardIcon, backIcon, pullOutIcon, pushInIcon } from './my-icons.js';
 import '@polymer/paper-slider/paper-slider.js';
 import '@polymer/paper-spinner/paper-spinner.js';
+import '@polymer/paper-ripple/paper-ripple.js';
+import '@polymer/paper-button/paper-button.js';
 
 // This element is connected to the Redux store.
 import { store } from '../store.js';
 
+import { firebase } from '../firebase.js';
 
 // These are the elements needed by this element.
 import './counter-element.js';
@@ -20,6 +23,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     return {
       _videoId: {type: String},
       _videoURL: {type: String},
+      _swing: {type: Object},
       _swings: {type: Array},
       _isPaused: {type: Boolean},
       _videoDuration: {type: Number},
@@ -61,6 +65,14 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           top:0px;
           right:0px;
           text-align:center;
+        }
+
+        #positionButtonContainer {
+          width:100%;
+          background:rgba(0,0,0,.4);
+          display:flex;
+          flex-direction:row;
+          justify-content:space-between;
         }
 
         #spinnerContainer {
@@ -183,6 +195,42 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
         #canvas {
         }
 
+        .positionButton{
+          padding: 10px;
+          border-radius: 50%;
+          background: var(--app-color);
+          display: flex;
+          font-size: 16px;
+          width: 25px;
+          height: 25px;
+          align-items: center;
+          justify-content: center;
+          cursor:pointer;
+          position:relative;
+        }
+
+        #instructionsContainer {
+          background: rgba(0,0,0,.01);
+          position:fixed;
+          top:0;
+          bottom:0;
+          left:0;
+          right:0;
+          display:flex;
+          justify-content:center;
+          align-items:center;
+          display:none;
+        }
+
+        .instruction {
+          background:rgba(0,0,0,.5);
+          border-radius:10px;
+          padding:10px;
+          color:white;
+          display:none;
+          max-width:60%;
+        }
+
         #pullOutIcon {
           background:rgba(0,0,0,.4);
           height:40px;
@@ -242,32 +290,154 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       <div id="playerContainer" class="${this._isLoading ? 'hide' : 'showFlex'}">
           <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" playsinline muted preload></video>
       </div>
+
       <div id="canvasContainer" class="${this._isLoading ? 'hide' : 'show'}">
         <canvas id="canvas" @click="${this._clickedCanvas}"></canvas>
         <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
-        <div style="bottom:0;right:0;left:0;position:fixed;padding:16px 8px;align-items: center; display: flex;flex-direction: row;">
-          <div style="flex:1;display:flex;align-items:flex-end;padding:16px 0px;">
-            <paper-slider id="slider" min="0" max="${this._videoDuration}" pin="true" step=".1" value="${this._videoCurrentTime}" style="width:100%;"></paper-slider>
+        <div id="instructionsContainer">
+          <div class="instruction" id="instructionp1">
+            P1 is your initial set up position.
+            <paper-button id="save_p1" @click="${this._savePosition}">Save</paper-button>
           </div>
-          <div @click="${this._skipBackward}" class="icon">
-            ${skipBackwardIcon}
+          <div class="instruction" id="instructionp2">
+            P2 is shaft parallel to the ground in the backswing.
+            <paper-button id="save_p2" @click="${this._savePosition}">Save</paper-button>
           </div>
-          <div @click="${this._play}" class="${this._isPaused ? 'show' : 'hide'} bigIcon">
-            ${playIcon}
+          <div class="instruction" id="instructionp3">
+            P3 is the right arm parallet to the ground in the backswing.
+            <paper-button id="save_p3" @click="${this._savePosition}">Save</paper-button>
           </div>
-          <div @click="${this._pause}" class="${this._isPaused ? 'hide' : 'show'} bigIcon">
-            ${pauseIcon}
+          <div class="instruction" id="instructionp4">
+            P4 is the end of your backswing.
+            <paper-button id="save_p4" @click="${this._savePosition}">Save</paper-button>
           </div>
-          <div @click="${this._skipForward}" class="icon">
-            ${skipForwardIcon}
+          <div class="instruction" id="instructionp5">
+            P5 is the right arm parallel to the ground in the downswing.
+            <paper-button id="save_p5" @click="${this._savePosition}">Save</paper-button>
+          </div>
+          <div class="instruction" id="instructionp6">
+            P6 is the shaft parallel to the ground in the downswing.
+            <paper-button id="save_p6" @click="${this._savePosition}">Save</paper-button>
+          </div>
+          <div class="instruction" id="instructionp7">
+            P7 is impact.
+            <paper-button id="save_p7" @click="${this._savePosition}">Save</paper-button>
+          </div>
+          <div class="instruction" id="instructionp8">
+            P8 is shaft parallel to the ground in the follow through.
+            <paper-button id="save_p8" @click="${this._savePosition}">Save</paper-button>
+          </div>
+          <div class="instruction" id="instructionp9">
+            P9 is the right arm parallel to the ground in the follow through.
+            <paper-button id="save_p9" @click="${this._savePosition}">Save</paper-button>
+          </div>
+          <div class="instruction" id="instructionp10">
+            P10 is finish of your swing.
+            <paper-button id="save_p10" @click="${this._savePosition}">Save</paper-button>
+          </div>
+        </div>
+        <div style="bottom:0;right:0;left:0;position:fixed;padding:16px 8px;align-items: center; display: flex;flex-direction: column;">
+          <div style="display:flex; width:100%;align-items:center;flex-direction:row;">
+            <div style="flex:1;display:flex;align-items:flex-end;padding:16px 0px;">
+              <paper-slider id="slider" min="0" max="${this._videoDuration}" pin="true" step=".1" value="${this._videoCurrentTime}" style="width:100%;"></paper-slider>
+            </div>
+            <div @click="${this._skipBackward}" class="icon">
+              ${skipBackwardIcon}
+            </div>
+            <div @click="${this._play}" class="${this._isPaused ? 'show' : 'hide'} bigIcon">
+              ${playIcon}
+            </div>
+            <div @click="${this._pause}" class="${this._isPaused ? 'hide' : 'show'} bigIcon">
+              ${pauseIcon}
+            </div>
+            <div @click="${this._skipForward}" class="icon">
+              ${skipForwardIcon}
+            </div>
+          </div>
+          <div style="width:100%;">
+            <div id="positionButtonContainer">
+              <div class="positionButton" id="button_p1" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>1
+              </div>
+              <div class="positionButton" id="button_p2" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>
+                2
+              </div>
+              <div class="positionButton" id="button_p3" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>
+                3
+              </div>
+              <div class="positionButton" id="button_p4" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>
+                4
+              </div>
+              <div class="positionButton" id="button_p5" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>
+                5
+              </div>
+              <div class="positionButton" id="button_p6" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>
+                6
+              </div>
+              <div class="positionButton" id="button_p7" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>
+                7
+              </div>
+              <div class="positionButton" id="button_p8" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>
+                8
+              </div>
+              <div class="positionButton" id="button_p9" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>
+                9
+              </div>
+              <div class="positionButton" id="button_p10" @click="${this._swingPosition}">
+                <paper-ripple></paper-ripple>
+                10
+              </div>
+            </div>
           </div>
         </div>
       </div>
     `;
   }
 
-  _clickedCanvas(e){
-    console.log(e);
+  _savePosition(e){
+    var p = e.srcElement.id.split('_')[1];
+    var ct = this.shadowRoot.getElementById("video").currentTime;
+    firebase.firestore().collection('swings').doc(this._videoId).set({
+      [p]: ct
+    },{merge:true});
+
+    var is = this.shadowRoot.querySelectorAll(".instruction");
+
+    for (var i=0; i<is.length; i++){
+      is[i].classList.add('hide');
+      is[i].classList.remove('show');
+      this.shadowRoot.getElementById("instructionsContainer").classList.remove('showFlex');
+      this.shadowRoot.getElementById("instructionsContainer").classList.add('hide');
+    }
+  }
+
+  _swingPosition(e){
+
+    var p = e.srcElement.id.split('_')[1];
+    if (typeof this._swing[e.srcElement.id.split('_')[1]] == 'number'){
+      console.log('GOT POSITION ',p,'!!!');
+      this.shadowRoot.getElementById("video").currentTime = this._swing[e.srcElement.id.split('_')[1]];
+    } else {
+      var is = this.shadowRoot.querySelectorAll(".instruction");
+
+      for (var i=0; i<is.length; i++){
+        is[i].classList.add('hide');
+      }
+      console.log('show instruction');
+      let instruction = 'instruction'+p;
+      this.shadowRoot.getElementById("instructionsContainer").classList.add('showFlex');
+      this.shadowRoot.getElementById("instructionsContainer").classList.remove('hide');
+      this.shadowRoot.getElementById(instruction).classList.add('show');
+      this.shadowRoot.getElementById(instruction).classList.remove('hide');
+    }
   }
 
   firstUpdated(){
@@ -387,10 +557,13 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
 
   updated(changedProps){
 
-
     var parsedUrl = new URL(window.location.href);
     this._videoId = parsedUrl.searchParams.get("id");
     if (this._swings.length > 0){
+      this._swing = this._swings.find(obj => {
+        return obj.key === this._videoId;
+      });
+
       this._videoURL = this._swings.find(obj => {
         return obj.key === this._videoId;
       }).url;
