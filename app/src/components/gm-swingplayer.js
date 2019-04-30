@@ -196,13 +196,13 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
         }
 
         .positionButton{
-          padding: 10px;
+          padding: 8px;
           border-radius: 50%;
           background: var(--app-color);
           display: flex;
-          font-size: 16px;
-          width: 25px;
-          height: 25px;
+          font-size: 13px;
+          width: 17px;
+          height: 17px;
           align-items: center;
           justify-content: center;
           cursor:pointer;
@@ -240,7 +240,22 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           border:1px solid var(--app-color);
           border-right:none;
           cursor:pointer;
-        }`
+        }
+
+
+        /* Wide layout: when the viewport width is bigger than 460px, layout
+        changes to a wide layout */
+        @media (min-width: 460px) {
+
+
+
+          .positionButton {
+            font-size: 16px;
+            width: 25px;
+            height: 25px;
+          }
+        }
+        `
     ];
   }
 
