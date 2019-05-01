@@ -22,6 +22,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   static get properties() {
     return {
       _videoId: {type: String},
+      _thumb: {type: String},
       _videoURL: {type: String},
       _swing: {type: Object},
       _swings: {type: Array},
@@ -55,13 +56,22 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           flex-direction:column;
         }
 
+        #backgroundImageContainer {
+          position:fixed;
+          bottom:0px;
+          left:0px;
+          top:0px;
+          right:0px;
+          filter:blur(2px);
+        }
+
         #playerContainer {
           display:flex;
           justify-content:center;
           position:fixed;
           width:100%;
           height:100%;
-          background:black;
+          background:transparent;
           top:0px;
           right:0px;
           text-align:center;
@@ -69,7 +79,6 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
 
         #positionButtonContainer {
           width:100%;
-          background:rgba(0,0,0,.4);
           display:flex;
           flex-direction:row;
           justify-content:space-between;
@@ -302,6 +311,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       <div id="spinnerContainer">
         <paper-spinner active></paper-spinner>
       </div>
+      <div id="backgroundImageContainer" class="${this._isLoading ? 'hide' : 'showFlex'}" style="background-size:cover; background-image:url(${this._thumb});"></div>
       <div id="playerContainer" class="${this._isLoading ? 'hide' : 'showFlex'}">
           <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" playsinline muted preload></video>
       </div>
@@ -582,6 +592,10 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       this._videoURL = this._swings.find(obj => {
         return obj.key === this._videoId;
       }).url;
+
+      this._thumb = this._swings.find(obj => {
+        return obj.key === this._videoId;
+      }).thumb;
     }
 
     if (changedProps.has("_videoId")){
