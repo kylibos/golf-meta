@@ -205,7 +205,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
         }
 
         .positionButton{
-          padding: 8px;
+          padding: 7px;
           border-radius: 50%;
           background: var(--app-color);
           display: flex;
@@ -216,6 +216,18 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           justify-content: center;
           cursor:pointer;
           position:relative;
+          box-shadow: 0px 0px 0px 3px rgba(0,0,0,0.3);
+        }
+
+        .saveButton {
+          background: var(--app-color);
+          color:rgba(0,0,0,.8);
+        }
+
+        .info {
+          padding:5px;
+          padding-bottom:10px;
+          padding-top:20px;
         }
 
         #instructionsContainer {
@@ -238,6 +250,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           color:white;
           display:none;
           max-width:60%;
+          font-size:14px;
         }
 
         #pullOutIcon {
@@ -251,6 +264,9 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
           cursor:pointer;
         }
 
+        .instructionButtonContainer {
+          text-align:right;
+        }
 
         /* Wide layout: when the viewport width is bigger than 460px, layout
         changes to a wide layout */
@@ -321,45 +337,76 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
         <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
         <div id="instructionsContainer">
           <div class="instruction" id="instructionp1">
-            P1 is your initial set up position.
-            <paper-button id="save_p1" @click="${this._savePosition}">Save</paper-button>
-          </div>
+            <div class="info">P1 is your initial set up position.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p1" @click="${this._savePosition}">Save</paper-button>
+            </div>
+          </div>          
           <div class="instruction" id="instructionp2">
-            P2 is shaft parallel to the ground in the backswing.
-            <paper-button id="save_p2" @click="${this._savePosition}">Save</paper-button>
-          </div>
+            <div class="info">P2 is shaft parallel to the ground in the backswing.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p2" @click="${this._savePosition}">Save</paper-button>
+            </div>
+          </div>          
           <div class="instruction" id="instructionp3">
-            P3 is the right arm parallet to the ground in the backswing.
-            <paper-button id="save_p3" @click="${this._savePosition}">Save</paper-button>
-          </div>
+            <div class="info">P3 is the right arm parallet to the ground in the backswing.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p3" @click="${this._savePosition}">Save</paper-button>
+            </div>
+          </div>          
           <div class="instruction" id="instructionp4">
-            P4 is the end of your backswing.
-            <paper-button id="save_p4" @click="${this._savePosition}">Save</paper-button>
-          </div>
+            <div class="info">P4 is the end of your backswing.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p4" @click="${this._savePosition}">Save</paper-button>
+            </div>
+          </div>          
           <div class="instruction" id="instructionp5">
-            P5 is the right arm parallel to the ground in the downswing.
-            <paper-button id="save_p5" @click="${this._savePosition}">Save</paper-button>
-          </div>
+            <div class="info">P5 is the right arm parallel to the ground in the downswing.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p5" @click="${this._savePosition}">Save</paper-button>
+            </div>
+          </div>          
           <div class="instruction" id="instructionp6">
-            P6 is the shaft parallel to the ground in the downswing.
-            <paper-button id="save_p6" @click="${this._savePosition}">Save</paper-button>
-          </div>
+            <div class="info">P6 is the shaft parallel to the ground in the downswing.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p6" @click="${this._savePosition}">Save</paper-button>
+            </div>
+          </div>          
           <div class="instruction" id="instructionp7">
-            P7 is impact.
-            <paper-button id="save_p7" @click="${this._savePosition}">Save</paper-button>
-          </div>
+            <div class="info">P7 is impact.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p7" @click="${this._savePosition}">Save</paper-button>
+            </div>
+          </div>          
           <div class="instruction" id="instructionp8">
-            P8 is shaft parallel to the ground in the follow through.
-            <paper-button id="save_p8" @click="${this._savePosition}">Save</paper-button>
-          </div>
+            <div class="info">P8 is shaft parallel to the ground in the follow through.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p8" @click="${this._savePosition}">Save</paper-button>
+            </div>
+          </div>          
           <div class="instruction" id="instructionp9">
-            P9 is the right arm parallel to the ground in the follow through.
-            <paper-button id="save_p9" @click="${this._savePosition}">Save</paper-button>
-          </div>
+            <div class="info">P9 is the right arm parallel to the ground in the follow through.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p9" @click="${this._savePosition}">Save</paper-button>
+            </div>
+          </div>          
           <div class="instruction" id="instructionp10">
-            P10 is finish of your swing.
-            <paper-button id="save_p10" @click="${this._savePosition}">Save</paper-button>
+            <div class="info">P10 is finish of your swing.</div>
+            <div class="instructionButtonContainer">
+              <paper-button @click="${this._cancelPosition}">Cancel</paper-button>
+              <paper-button class="saveButton" raised id="save_p10" @click="${this._savePosition}">Save</paper-button>
+            </div>
           </div>
+
         </div>
         <div style="bottom:0;right:0;left:0;position:fixed;padding:16px 8px;align-items: center; display: flex;flex-direction: column;">
           <div style="display:flex; width:100%;align-items:center;flex-direction:row;">
@@ -434,6 +481,12 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       [p]: ct
     },{merge:true});
 
+    var is = this.shadowRoot.querySelectorAll(".instruction");
+
+    this._cancelPosition();
+  }
+
+  _cancelPosition(){
     var is = this.shadowRoot.querySelectorAll(".instruction");
 
     for (var i=0; i<is.length; i++){
