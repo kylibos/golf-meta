@@ -287,7 +287,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   constructor(){
     super();
     this._isPaused = true;
-    this._isLoading = true;
+    this._isLoading = false;
     this._videoDuration = 0;
     this._videoCurrentTime = 0;
     this._showPositions = false;
@@ -329,7 +329,8 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       </div>
       <div id="backgroundImageContainer" class="${this._isLoading ? 'hide' : 'showFlex'}" style="background-size:cover; background-image:url(${this._thumb});"></div>
       <div id="playerContainer" class="${this._isLoading ? 'hide' : 'showFlex'}">
-          <video height=${this._videoHeight} width=${this._videoWidth} id="video" src="${this._videoURL}" playsinline muted preload></video>
+      <div>Hello</div>
+          <iframe height=${this._videoHeight} width=${this._videoWidth}  class="sproutvideo-player" src="https://videos.sproutvideo.com/embed/709adcb31f19e5c6f8/cd8cf2e796aa69d3" style="position:absolute;width:100%;height:100%;left:0;top:0" frameborder="0" allowfullscreen=""></iframe>
       </div>
 
       <div id="canvasContainer" class="${this._isLoading ? 'hide' : 'show'}">
@@ -502,7 +503,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     var p = e.srcElement.id.split('_')[1];
     if (typeof this._swing[e.srcElement.id.split('_')[1]] == 'number'){
       console.log('GOT POSITION ',p,'!!!');
-      this.shadowRoot.getElementById("video").currentTime = this._swing[e.srcElement.id.split('_')[1]];
+      //this.shadowRoot.getElementById("video").currentTime = this._swing[e.srcElement.id.split('_')[1]];
     } else {
       var is = this.shadowRoot.querySelectorAll(".instruction");
 
@@ -519,25 +520,6 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
   }
 
   firstUpdated(){
-    let v = this.shadowRoot.getElementById("video");
-
-    v.addEventListener('play', (e) => {
-      //console.log('play', e);
-    });    
-
-    v.addEventListener('waiting', (e) => {
-      //console.log('waiting', e);
-    });
-
-    v.addEventListener('loadedmetadata', (e) => {
-      //console.log('loadedmetadata', e);
-    });
-
-    v.addEventListener('canplaythrough', (e) => {
-      //console.log('canplaythrough', e);
-      // remove the spinner
-      this._isLoading = false;
-    });
 
     let c = this.shadowRoot.getElementById("canvas");
     c.addEventListener("mousedown", (e) => {
@@ -609,30 +591,6 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     window.history.back();
   }
 
-  _skipBackward(){
-    let v = this.shadowRoot.getElementById("video");
-    v.pause();
-    v.currentTime = v.currentTime - .05;
-  }
-
-  _skipForward(){
-    let v = this.shadowRoot.getElementById("video");
-    v.pause();
-    v.currentTime = v.currentTime + .05;
-  }
-
-  _pause(){
-    let v = this.shadowRoot.getElementById("video");
-    v.pause();
-    this._isPaused = true;
-  }
-
-  _play(){
-    let v = this.shadowRoot.getElementById("video");
-    v.play();
-    this._isPaused = false;
-  }
-
   updated(changedProps){
 
     var parsedUrl = new URL(window.location.href);
@@ -645,40 +603,13 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       this._videoURL = this._swings.find(obj => {
         return obj.key === this._videoId;
       }).url;
-
-      this._thumb = this._swings.find(obj => {
-        return obj.key === this._videoId;
-      }).thumb;
     }
 
     if (changedProps.has("_videoId")){
-      this._isLoading = true;
-      this.shadowRoot.getElementById("video").load();
+      //this._isLoading = true;
+      //this.shadowRoot.getElementById("video").load();
     }
 
-    let v = this.shadowRoot.getElementById("video");
-
-    v.ontimeupdate = () => {
-      this._videoCurrentTime = parseFloat( v.currentTime.toFixed(1) );
-    };
-
-    v.oncanplay = () => {
-      this._videoDuration = v.duration;
-      var slider = this.shadowRoot.getElementById('slider');
-      slider.addEventListener('immediate-value-change', (e) => {
-        v.currentTime = slider.immediateValue;
-      });
-      slider.addEventListener('change', (e) => {
-        v.currentTime = slider.value;
-      });
-
-      this._initialVideoHeight = v.videoHeight;
-      this._initialVideoWidth = v.videoWidth;
-      this._windowHeight = window.innerHeight;
-      this._windowWidth = window.innerWidth;
-      this._fitVideo();
-
-    }; 
   }
 
   // This is called every time something is updated in the store.

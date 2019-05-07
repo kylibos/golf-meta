@@ -223,7 +223,7 @@ class GmUploader extends connect(store)(LitElement) {
         <div class="bottomNav">
           <paper-button @click="${this._cancel}" style="color:blue;">Cancel</paper-button>
           <div style="flex:1; text-align:right;">
-            <paper-button ?disabled=${this._uploadProgress > 0 ? true : false} class="button" @click="${this._uploadVideo}">${this._uploadProgress ? html`${this._uploadProgress}%` : html`Upload`}</paper-button>
+            <paper-button ?disabled=${this._uploadProgress > 0 ? true : false} class="button" @click="${this._initializeVideo}">${this._uploadProgress ? html`${this._uploadProgress}%` : html`Upload`}</paper-button>
           </div>
         </div>
         <paper-progress value="${this._uploadProgress}"></paper-progress>
@@ -251,7 +251,70 @@ class GmUploader extends connect(store)(LitElement) {
     }
   }
 
-  _uploadVideo(){
+  _uploadVideo(t,id){
+    console.log('upload',t,id);
+
+    var formData = new FormData();
+    formData.append( 'source_video', this._videoFile );
+    formData.append( 'token', t );
+    formData.append( 'privacy', 0);
+
+    fetch('https://api.sproutvideo.com/v1/videos', { // Your POST endpoint
+        method: 'POST',
+        body: formData // This is your file object
+      })
+      .then(
+        (response) => {
+          if (response.status !== 200) {
+            console.log('Looks like there was a problem. Status Code: ' +
+              response.status);
+            return;
+          }
+
+          // Examine the text in the response
+          response.json().then((data) => {
+            console.log(data);;
+          });
+        }
+      )
+      .catch((err) => {
+        console.log('Fetch Error :-S', err);
+      });
+  }
+
+  _getToken(id){
+    console.log('doc ref', id);
+    firebase.firestore().collection('swings').doc(id).set({
+      state: 'getting token'
+    },{merge:true})
+    .then((docRef) => {
+      fetch('https://us-central1-golf-meta-staging.cloudfunctions.net/golfmeta/sproutToken')
+        .then(
+          (response) => {
+            if (response.status !== 200) {
+              console.log('Looks like there was a problem. Status Code: ' +
+                response.status);
+              return;
+            }
+
+            // Examine the text in the response
+            response.json().then((data) => {
+              console.log(data);
+              this._uploadVideo(data.token, id);
+            });
+          }
+        )
+        .catch((err) => {
+          console.log('Fetch Error :-S', err);
+        });
+    })
+    .catch(function(error) {
+      console.error("Error writing document: ", error);
+    });
+
+  }
+
+  _initializeVideo(){
 
     this._uploadError = '';
     var club = this.shadowRoot.getElementById('clubSelector').value;
@@ -282,77 +345,19 @@ class GmUploader extends connect(store)(LitElement) {
       return false;
     }
 
-    // Create thumbnail
-    var video = this.shadowRoot.getElementById('video');
-    console.log(this.shadowRoot.getElementById('video').videoWidth);
-    var w = this._calcWidth(video.videoHeight, video.videoWidth);
-    var h = this._calcHeight(video.videoHeight, video.videoWidth);
-    var canvas = this.shadowRoot.getElementById('thumbnailCanvas');
-  
-    canvas.width = w;
-    canvas.height = h;
-
-    var context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0, w, h);
-
     firebase.firestore().collection("swings").add({
       userHash: this._userHash,
       size: this._videoFile.size,
       type: this._videoFile.type,
       name: this._videoFile.name,
-      state: 'uploading',
-      created: firebase.firestore.FieldValue.serverTimestamp(),
+      state: 'initializing',
+      initialRecordCreationTs: firebase.firestore.FieldValue.serverTimestamp(),
       club: this.shadowRoot.getElementById('clubSelector').value,
       handicap: this.shadowRoot.getElementById('handicapSelector').value,
     })
     .then((docRef) => {
-      
-      console.log("Document successfully written!");
+      this._getToken(docRef.id);
 
-      // Upload the video
-
-
-      var ref = firebase.storage().ref();
-      var storageRef = ref.child('swings/'+this._generateFileName(docRef.id));
-      var file = this._videoFile;
-
-      var uploadTask = storageRef.put(file);
-
-      uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
-        var percent = snapshot.bytesTransferred / snapshot.totalBytes * 100;
-        this._uploadProgress = Math.round(percent);
-        if (this._uploadProgress == 100) {
-          this._uploadComplete();
-          //console.log(storageRef.getDownloadURL());
-        }
-      }, (error)=>{
-        console.log(error);
-      }, ()=>{
-        //console.log('donwload URL:',storageRef.getDownloadURL());
-        storageRef.getDownloadURL().then((url) => {
-          firebase.firestore().collection("swings").doc(docRef.id).set({
-            url: url
-          }, { merge: true })
-          .then(() => {
-            this._uploadThumbnail(docRef.id);
-            return Promise.resolve();
-          })
-          .catch(function(error) {
-              console.error("Error writing document: ", error);
-            return Promise.resolve();
-          });
-        });
-      });
-      
-
-      // Upload the Thumbnail
-
-      this.swingListenerUnsubscribe = firebase.firestore().collection('swings').doc(docRef.id).onSnapshot((doc) => {
-        if (doc.data().state == 'deployed'){
-          alert('Your video is ready!!!');
-          this.swingListenerUnsubscribe();
-        }
-      });
     })
     .catch(function(error) {
       console.error("Error writing document: ", error);
@@ -361,50 +366,6 @@ class GmUploader extends connect(store)(LitElement) {
     console.log(this.shadowRoot.getElementById('clubSelector').value);
   }
 
-  _uploadThumbnail(id){
-    console.log('upload thumbnail');
-
-    var canvas = this.shadowRoot.getElementById('thumbnailCanvas');
-    console.log('image',canvas.toDataURL("image/jpeg"));
-
-    var ref = firebase.storage().ref();
-    var storageRef = ref.child('thumbs/'+this._generateThumbFileName(id));
-    var uploadTask = storageRef.putString(canvas.toDataURL(), 'data_url');
-
-    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
-      var percent = snapshot.bytesTransferred / snapshot.totalBytes * 100;
-      this._uploadProgress = Math.round(percent);
-      if (this._uploadProgress == 100) {
-        //this._uploadComplete();
-        //console.log(storageRef.getDownloadURL());
-        console.log('THIMB UPLOADED!');
-      }
-    }, (error)=>{
-      console.log(error);
-    }, ()=>{
-      storageRef.getDownloadURL().then((url) => {
-        firebase.firestore().collection("swings").doc(id).set({
-          thumb: url
-        }, { merge: true })
-        .then(() => {
-          console.log('thumbnail has been uploaded');
-          return Promise.resolve();
-        })
-        .catch(function(error) {
-            console.error("Error writing document: ", error);
-          return Promise.resolve();
-        });
-      });
-    });
-  }
-
-  _uploadComplete(){
-    this._uploadProgress = 0;
-    this.shadowRoot.getElementById('clubSelector').value = '';
-    this.shadowRoot.getElementById('handicapSelector').value = '';
-    this._clearVideo();
-    this._cancel();
-  }
 
   _clearVideo(){
     this.shadowRoot.getElementById('videoFile').value = '';
@@ -424,11 +385,11 @@ class GmUploader extends connect(store)(LitElement) {
 
     // send an event to center the dialog
   }
-
+/*
   _generateThumbFileName(id){
     return 'swing_' + id + '.jpg';
   }
-
+*/
   _generateFileName(id){
     return 'swing_' + id + '.' + this._videoFile.name.split('.').pop();
   }
