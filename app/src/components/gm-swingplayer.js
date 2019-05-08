@@ -38,7 +38,9 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       _videoWidth: {type: Number},
       _isLoading: {type: Boolean},
       _isMouseDown: {type: Boolean},
-      _mouse: {type: Object}
+      _mouse: {type: Object},
+      _SV: {type: Object},
+      _player: {type: Object}
     };
   }
 
@@ -296,6 +298,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     this._videoHeight = '0px';
     this._videoWidth = '0px';
     this._mouse = {};
+    this._SV = {};
     this._isMouseDown = false;
     window.addEventListener('resize', () => {
       this._windowHeight = window.innerHeight;
@@ -327,11 +330,8 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       <div id="spinnerContainer">
         <paper-spinner active></paper-spinner>
       </div>
-      <div id="backgroundImageContainer" class="${this._isLoading ? 'hide' : 'showFlex'}" style="background-size:cover; background-image:url(${this._thumb});"></div>
-      <div id="playerContainer" class="${this._isLoading ? 'hide' : 'showFlex'}">
-      <div>Hello</div>
-          <iframe height=${this._videoHeight} width=${this._videoWidth}  class="sproutvideo-player" src="https://videos.sproutvideo.com/embed/709adcb31f19e5c6f8/cd8cf2e796aa69d3" style="position:absolute;width:100%;height:100%;left:0;top:0" frameborder="0" allowfullscreen=""></iframe>
-      </div>
+      <div id="backgroundImageContainer" class="${this._isLoading ? 'hide' : 'showFlex'}" style="background-position:center;background-size:cover; background-image:url(${this._thumb});"></div>
+      <div id="playerContainer" class="${this._isLoading ? 'hide' : 'showFlex'}"></div>
 
       <div id="canvasContainer" class="${this._isLoading ? 'hide' : 'show'}">
         <canvas id="canvas" @click="${this._clickedCanvas}"></canvas>
@@ -556,6 +556,206 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       }
     });
 
+
+
+
+    // See if this works to put SV into this._SV
+
+    var SV;
+if (!SV) {
+  SV = {}
+}( () => {
+  if (!SV.players) {
+    SV.players = {}
+  }
+  if (!SV.Player) {
+    SV.Player = function (options) {
+      var _videoId = options.videoId;
+      var _playlistId = options.playlistId;
+      var _volume = 1,
+        _duration = 0,
+        _currentTime = 0,
+        _loaded = 0,
+        _email = null,
+        _listeners = {};
+      var _sendMessage = function (message) {
+        console.log('SEND MESSAGE', message);
+        console.log(_iframe);
+        console.log('to iframe', _iframe.contentWindow);
+        _iframe.contentWindow.postMessage(message, window.location.protocol + "//videos.sproutvideo.com")
+      };
+      var _getIframeByVideoId = (id, type) => {
+        var className = type == "video" ? "sproutvideo-player" : "sproutvideo-playlist";
+        var players = SV.utils.getElementsByClassName(className);
+        console.log('got players', players);
+        /*
+        for (var i = 0; i < players.length; i++) {
+          if (players[i].src.indexOf(id) > -1) {
+            return players[i]
+          }
+        }
+        */
+        return players;
+      };
+      var _iframe = _getIframeByVideoId(_videoId || _playlistId, !!_videoId ? "video" : "playlist");
+      if (!_iframe) {
+        throw "Can not find video iframe"
+      }
+      var pub = {
+        events: options.events,
+        play: (index) => {
+          console.log('PLAY IT');
+          if (typeof index != "undefined") {
+            _sendMessage('{"name":"playVideo", "data":"' + index + '"}')
+          } else {
+            _sendMessage('{"name":"play"}')
+          }
+        },
+        pause: function () {
+          _sendMessage('{"name":"pause"}')
+        },
+        setVolume: function (vol) {
+          _sendMessage('{"name":"volume", "data":"' + vol + '"}')
+        },
+        getVolume: function () {
+          return _volume
+        },
+        seek: function (loc) {
+          _sendMessage('{"name":"seek", "data":"' + loc + '"}')
+        },
+        toggleHD: function () {
+          _sendMessage('{"name":"toggleHD"}')
+        },
+        getCurrentTime: function () {
+          return _currentTime
+        },
+        getPercentLoaded: function () {
+          return _loaded
+        },
+        getDuration: function () {
+          return _duration
+        },
+        getEmail: function () {
+          return _email
+        },
+        frameForward: function () {
+          _sendMessage('{"name":"frameForward"}')
+        },
+        frameBack: function () {
+          _sendMessage('{"name":"frameBack"}')
+        },
+        getPaused: function () {
+          _sendMessage('{"name":"getPaused"}')
+        },
+        updateStatus: function (message) {
+          switch (message.type) {
+            case "volume":
+              _volume = message.data;
+              break;
+            case "progress":
+              _currentTime = message.data.time;
+              break;
+            case "loading":
+              _loaded = message.data;
+              break;
+            case "ready":
+              _duration = message.data.duration;
+              _email = message.data.email;
+              break
+          }
+        },
+        bind: function (type, listener) {
+          if (typeof _listeners[type] == "undefined") {
+            _listeners[type] = []
+          }
+          _listeners[type].push(listener)
+        },
+        fire: function (event) {
+          if (typeof event == "string") {
+            event = {
+              type: event
+            }
+          }
+          if (!event.target) {
+            event.target = this
+          }
+          if (_listeners[event.type] instanceof Array) {
+            var listeners = _listeners[event.type];
+            for (var i = 0, len = listeners.length; i < len; i++) {
+              var returnValue = listeners[i].call(this, event);
+              if (returnValue == this.unbind) {
+                this.unbind(event.type, listeners[i])
+              }
+            }
+          }
+        },
+        unbind: function (type, listener) {
+          if (_listeners[type] instanceof Array) {
+            var listeners = _listeners[type];
+            for (var i = 0, len = listeners.length; i < len; i++) {
+              if (listeners[i] === listener) {
+                listeners.splice(i, 1);
+                break
+              }
+            }
+          }
+        }
+      };
+      SV.players[_videoId || _playlistId] = pub;
+      return pub
+    }
+  }
+  if (!SV.utils) {
+    SV.utils = {
+      getElementsByClassName: (classname) => {
+        if (this.shadowRoot.querySelector) {
+          //return document.getElementsByClassName(classname)
+          return this.shadowRoot.querySelector('.'+classname);
+        } else {
+          var classElements = new Array;
+          var els = document.getElementsByTagName("*");
+          var elsLen = els.length;
+          var pattern = new RegExp("(^|\\s)" + classname + "(\\s|$)");
+          for (var i = 0, j = 0; i < elsLen; i++) {
+            if (pattern.test(els[i].className)) {
+              classElements[j] = els[i];
+              j++
+            }
+          }
+          return classElements
+        }
+      }
+    }
+  }
+  if (!SV.routePlayerEvent) {
+    SV.routePlayerEvent = function (e) {
+      if (e.origin.split("//")[1] == "videos.sproutvideo.com") {
+        try {
+          var message = JSON.parse(e.data);
+          var player = SV.players[message.id];
+          player.updateStatus(message);
+          player.fire({
+            type: message.type,
+            data: message.data
+          });
+          if (player && player.events && player.events["onStatus"]) {
+            player.events["onStatus"](message)
+          }
+        } catch (e) {}
+      }
+    }
+  }
+  if (window.addEventListener) {
+    window.addEventListener("message", SV.routePlayerEvent, false)
+  } else {
+    window.attachEvent("onmessage", SV.routePlayerEvent)
+  }
+})();
+
+this._SV = SV;
+
+
+console.log(this._SV);
   }
 
   _clearCanvas(){
@@ -591,18 +791,34 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
     window.history.back();
   }
 
+  _play(){
+    this._player.play();
+  }
+
   updated(changedProps){
 
     var parsedUrl = new URL(window.location.href);
     this._videoId = parsedUrl.searchParams.get("id");
+    //console.log('video id', this._videoId);
     if (this._swings.length > 0){
+      
       this._swing = this._swings.find(obj => {
         return obj.key === this._videoId;
       });
+      this._thumb = this._swing.assets.thumbnails[0];
 
-      this._videoURL = this._swings.find(obj => {
-        return obj.key === this._videoId;
-      }).url;
+
+      this.shadowRoot.getElementById("playerContainer").innerHTML = this._swing.embedCode.replace(/' width.*fullscreen/, "?transparent=true&bigPlayButton=false&showControls=false' width=\"100%\" frameborder=0");
+      
+      console.log('has', changedProps.has('_swing'));
+      if (changedProps.has('_swing')){
+        this._player = new this._SV.Player({videoId: this._swing.sproutId});
+      }
+      /*
+      this._player = new this._SV.Player({videoId: this._swing.sproutId});
+      */
+      //console.log('changed props',changedProps);
+      //console.log('swing',this._swing);
     }
 
     if (changedProps.has("_videoId")){

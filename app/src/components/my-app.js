@@ -57,10 +57,12 @@ class MyApp extends connect(store)(LitElement) {
       _page: { type: String },
       _drawerOpened: { type: Boolean },
       _snackbarOpened: { type: Boolean },
+      _alertSnackbarOpened: {type: Boolean},
       _offline: { type: Boolean },
       _signedIn: {type: Boolean},
       _block: {type: Boolean},
-      _photoURL: {type: String}
+      _photoURL: {type: String},
+      _alertMessage: {type: String}
     };
   }
 
@@ -236,6 +238,10 @@ class MyApp extends connect(store)(LitElement) {
       <snack-bar ?active="${this._snackbarOpened}">
         You are now ${this._offline ? 'offline' : 'online'}.
       </snack-bar>
+
+      <snack-bar ?active="${this._alertSnackbarOpened}">
+        ${this._alertMessage}
+      </snack-bar>
     `;
   }
 
@@ -246,6 +252,7 @@ class MyApp extends connect(store)(LitElement) {
     setPassiveTouchGestures(true);
 
     this._block = true;
+    this._alertSnackbarOpened = false;
 
     firebase.auth().onAuthStateChanged((user) => {
       if (user){
@@ -294,6 +301,8 @@ class MyApp extends connect(store)(LitElement) {
 
   firstUpdated() {
     this.addEventListener('goTo', (e) => this._goTo(e));
+    this.addEventListener('openAlertSnackbar', (e) => this._openAlertSnackbar(e));
+    this.addEventListener('closeAlertSnackbar', (e) => this._closeAlertSnackbar(e));
     installRouter((location) => store.dispatch(navigate(decodeURIComponent(location.pathname))));
     installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
     installMediaQueryWatcher(`(min-width: 460px)`,
@@ -311,6 +320,16 @@ class MyApp extends connect(store)(LitElement) {
     }
   }
 
+  _openAlertSnackbar(e){
+    this._alertSnackbarOpened = true;
+    this._alertMessage = e.detail;
+  }
+
+  _closeAlertSnackbar(e){
+    this._alertSnackbarOpened = false;
+    this._alertMessage = '';
+  }
+
   _goTo(e){
     store.dispatch(navigate(decodeURIComponent(e.detail)));
   }
@@ -325,13 +344,12 @@ class MyApp extends connect(store)(LitElement) {
 
   _getSwings(){
     var swings = [];
-    firebase.firestore().collection('swings').where("state", "==", "deployed").orderBy("created", "desc")
+    firebase.firestore().collection('swings').where("state", "==", "deployed").orderBy("initialRecordCreationTs", "desc")
     .onSnapshot(function(querySnapshot) {
       swings = [];
       querySnapshot.forEach((doc) => {
-        //console.log(doc.data());
-          var i = swings.push(doc.data());
-          swings[i-1].key = doc.id;
+        var i = swings.push(doc.data());
+        swings[i-1].key = doc.id;
       });
 
       store.dispatch(updateSwings(swings));

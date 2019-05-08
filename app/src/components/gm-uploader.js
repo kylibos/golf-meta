@@ -258,22 +258,45 @@ class GmUploader extends connect(store)(LitElement) {
     formData.append( 'source_video', this._videoFile );
     formData.append( 'token', t );
     formData.append( 'privacy', 0);
-
+    if (window.location.hostname == '127.0.0.1'){
+      console.log('DEV FIREBASE');
+      formData.append( 'notification_url', 'https://us-central1-golf-meta-dev.cloudfunctions.net/golfmeta/sproutWebHook')
+    } else if (window.location.hostname == 'golf-meta-staging.appspot.com') {
+      console.log('STAGING FIREBASE');
+      formData.append( 'notification_url', 'https://us-central1-golf-meta-staging.cloudfunctions.net/golfmeta/sproutWebHook');
+    }
+    
     fetch('https://api.sproutvideo.com/v1/videos', { // Your POST endpoint
         method: 'POST',
         body: formData // This is your file object
       })
       .then(
         (response) => {
-          if (response.status !== 200) {
+          if (response.status !== 200 && response.status !== 201) {
             console.log('Looks like there was a problem. Status Code: ' +
               response.status);
+            console.log(typeof response.status)
+            console.log(response);
             return;
           }
 
           // Examine the text in the response
           response.json().then((data) => {
-            console.log(data);;
+            // create the fb to sprout lookup for webhook reference
+            firebase.firestore().collection('videoLookup').add({
+              sproutId: data.id, 
+              fbId: id
+            });
+            firebase.firestore().collection('swings').doc(id).set({
+              state: 'uploaded',
+              sproutId: data.id,
+              uploadedTs: firebase.firestore.FieldValue.serverTimestamp()
+            },{merge:true});
+            this._cancel();
+            this.dispatchEvent(new CustomEvent('openAlertSnackbar', {detail: 'You video has been uploaded.  It can take up to a minute to process before you can watch it.', bubbles: true, composed: true}));
+            setTimeout(()=>{
+              this.dispatchEvent(new CustomEvent('closeAlertSnackbar', {bubbles: true, composed: true}));
+            },7000);
           });
         }
       )
@@ -362,8 +385,6 @@ class GmUploader extends connect(store)(LitElement) {
     .catch(function(error) {
       console.error("Error writing document: ", error);
     });
-    
-    console.log(this.shadowRoot.getElementById('clubSelector').value);
   }
 
 
@@ -384,12 +405,9 @@ class GmUploader extends connect(store)(LitElement) {
     this._uploadProgress = 0;
 
     // send an event to center the dialog
+    this.dispatchEvent(new CustomEvent('centerUploadDialog', {bubbles: true, composed: true}));
   }
-/*
-  _generateThumbFileName(id){
-    return 'swing_' + id + '.jpg';
-  }
-*/
+
   _generateFileName(id){
     return 'swing_' + id + '.' + this._videoFile.name.split('.').pop();
   }

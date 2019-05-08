@@ -112,7 +112,7 @@ class GmHome extends connect(store)(PageViewElement) {
         ${this._swings.map((item) => html`
           <div class="swingCard">
             <a href="/swingplayer?id=${item.key}" style="text-decoration:none;">
-              <div class="cardImage" style="background-size:cover; background-position:center;background-image:url(${item.thumb});"></div>
+              <div class="cardImage" style="background-size:cover; background-position:center;background-image:url(${item.assets.poster_frames[0]});"></div>
             </a>
             <div class="cardOptions">
               <div class="star" style="height:35px;">${emptyStar}</div>
@@ -161,7 +161,6 @@ class GmHome extends connect(store)(PageViewElement) {
 
   _clearVs(){
     var greens = this.shadowRoot.querySelectorAll(".green");
-
     for (var i=0; i<greens.length; i++){
       greens[i].classList.remove('green');
     }
@@ -170,6 +169,13 @@ class GmHome extends connect(store)(PageViewElement) {
   firstUpdated() {
     console.log('create listener');
     this.addEventListener('closeUploadDialog', (e) => this._closeDialog());
+    this.addEventListener('centerUploadDialog', (e) => this._centerDialog());
+  }
+
+  _centerDialog(){
+    setTimeout(()=>{
+      this.shadowRoot.getElementById('uploadDialog').center();
+    },500);
   }
 
   _closeDialog(){

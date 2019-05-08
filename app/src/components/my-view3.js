@@ -116,7 +116,7 @@ class MyView3 extends connect(store)(PageViewElement) {
   }
 
   firstUpdated(){
-
+/*
 var JSON;
 JSON || (JSON = {}),
   function () {
@@ -210,6 +210,8 @@ JSON || (JSON = {}),
       throw new SyntaxError("JSON.parse")
     })
   }();
+
+  */
 
 var SV;
 if (!SV) {
@@ -358,9 +360,7 @@ if (!SV) {
     SV.utils = {
       getElementsByClassName: (classname) => {
         if (this.shadowRoot.querySelector) {
-          console.log('ShadowRoot', this.shadowRoot);
           //return document.getElementsByClassName(classname)
-          console.log('get classname', this.shadowRoot.querySelector('.'+classname));
           return this.shadowRoot.querySelector('.'+classname);
         } else {
           var classElements = new Array;
