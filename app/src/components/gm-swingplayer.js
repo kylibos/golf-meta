@@ -333,7 +333,7 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       </div>
       <div id="backgroundImageContainer" class="${this._isLoading ? 'hide' : 'showFlex'}" style="background-position:center;background-size:cover; background-image:url(${this._thumb});"></div>
       <div id="playerContainer" class="${this._isLoading ? 'hide' : 'showFlex'}">
-        <iframe class="sproutvideo-player" src="${this._iframeURL}" width="100%" frameborder="0"></iframe>
+        <iframe class="sproutvideo-player" src="${this._iframeURL}" width="100%" frameborder="0" @load="${this._iframeLoaded}"></iframe>
       </div>
       <div id="canvasContainer" class="${this._isLoading ? 'hide' : 'show'}">
         <canvas id="canvas" @click="${this._clickedCanvas}"></canvas>
@@ -581,15 +581,11 @@ if (!SV) {
         _email = null,
         _listeners = {};
       var _sendMessage = function (message) {
-        console.log('SEND MESSAGE', message);
-        console.log(_iframe);
-        console.log('to iframe', _iframe.contentWindow);
         _iframe.contentWindow.postMessage(message, window.location.protocol + "//videos.sproutvideo.com")
       };
       var _getIframeByVideoId = (id, type) => {
         var className = type == "video" ? "sproutvideo-player" : "sproutvideo-playlist";
         var players = SV.utils.getElementsByClassName(className);
-        console.log('got players', players);
         /*
         for (var i = 0; i < players.length; i++) {
           if (players[i].src.indexOf(id) > -1) {
@@ -757,7 +753,6 @@ if (!SV) {
 this._SV = SV;
 
 
-console.log(this._SV);
   }
 
   _clearCanvas(){
@@ -797,6 +792,11 @@ console.log(this._SV);
     this._player.play();
   }
 
+  _iframeLoaded(){
+    console.log('I FRAME LOADED')
+  }
+  
+
   updated(changedProps){
 
     var parsedUrl = new URL(window.location.href);
@@ -810,10 +810,9 @@ console.log(this._SV);
       this._thumb = this._swing.assets.thumbnails[0];
 
 
-      this.shadowRoot.getElementById("playerContainer").innerHTML = this._swing.embedCode.replace(/' width.*fullscreen/, "?transparent=true&bigPlayButton=false&showControls=false' width=\"100%\" frameborder=0");
-      this._iframeURL = 'https://videos.sproutvideo.com/embed/'+this._swing.sproutId+'/'+this._swing.securityToken+'?transparent=true&amp;bigPlayButton=false&amp;showControls=false"';
-      console.log(this._iframeURL);
-      console.log('has', changedProps.has('_swing'));
+      //this.shadowRoot.getElementById("playerContainer").innerHTML = this._swing.embedCode.replace(/' width.*fullscreen/, "?transparent=true&bigPlayButton=false&showControls=false' width=\"100%\" frameborder=0");
+      this._iframeURL = 'https://videos.sproutvideo.com/embed/'+this._swing.sproutId+'/'+this._swing.securityToken+'?transparent=truebigPlayButton=false&showControls=false"';
+
       if (changedProps.has('_swing')){
         this._player = new this._SV.Player({videoId: this._swing.sproutId});
       }
