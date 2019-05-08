@@ -40,7 +40,8 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
       _isMouseDown: {type: Boolean},
       _mouse: {type: Object},
       _SV: {type: Object},
-      _player: {type: Object}
+      _player: {type: Object},
+      _iframeURL: {type: String}
     };
   }
 
@@ -331,8 +332,9 @@ class GmSwingPlayer extends connect(store)(PageViewElement) {
         <paper-spinner active></paper-spinner>
       </div>
       <div id="backgroundImageContainer" class="${this._isLoading ? 'hide' : 'showFlex'}" style="background-position:center;background-size:cover; background-image:url(${this._thumb});"></div>
-      <div id="playerContainer" class="${this._isLoading ? 'hide' : 'showFlex'}"></div>
-
+      <div id="playerContainer" class="${this._isLoading ? 'hide' : 'showFlex'}">
+        <iframe class="sproutvideo-player" src="${this._iframeURL}" width="100%" frameborder="0"></iframe>
+      </div>
       <div id="canvasContainer" class="${this._isLoading ? 'hide' : 'show'}">
         <canvas id="canvas" @click="${this._clickedCanvas}"></canvas>
         <div class="backIcon" @click="${this._goBack}">${backIcon}</div>
@@ -809,7 +811,8 @@ console.log(this._SV);
 
 
       this.shadowRoot.getElementById("playerContainer").innerHTML = this._swing.embedCode.replace(/' width.*fullscreen/, "?transparent=true&bigPlayButton=false&showControls=false' width=\"100%\" frameborder=0");
-      
+      this._iframeURL = 'https://videos.sproutvideo.com/embed/'+this._swing.sproutId+'/'+this._swing.securityToken+'?transparent=true&amp;bigPlayButton=false&amp;showControls=false"';
+      console.log(this._iframeURL);
       console.log('has', changedProps.has('_swing'));
       if (changedProps.has('_swing')){
         this._player = new this._SV.Player({videoId: this._swing.sproutId});
