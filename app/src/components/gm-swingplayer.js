@@ -811,7 +811,7 @@ this._SV = SV;
 
 
       //this.shadowRoot.getElementById("playerContainer").innerHTML = this._swing.embedCode.replace(/' width.*fullscreen/, "?transparent=true&bigPlayButton=false&showControls=false' width=\"100%\" frameborder=0");
-      this._iframeURL = 'https://videos.sproutvideo.com/embed/'+this._swing.sproutId+'/'+this._swing.securityToken+'?transparent=truebigPlayButton=false&showControls=false"';
+      this._iframeURL = 'https://videos.sproutvideo.com/embed/'+this._swing.sproutId+'/'+this._swing.securityToken+'?transparent=true&showControls=false&bigPlayButton=false';
 
       if (changedProps.has('_swing')){
         this._player = new this._SV.Player({videoId: this._swing.sproutId});
